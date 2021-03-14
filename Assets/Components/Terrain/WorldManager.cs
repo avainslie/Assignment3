@@ -17,6 +17,11 @@ namespace Antymology.Terrain
         public GameObject antPrefab;
 
         /// <summary>
+        /// The prefab containing the queen.
+        /// </summary>
+        public GameObject queenPrefab;
+
+        /// <summary>
         /// The material used for eech block.
         /// </summary>
         public Material blockMaterial;
@@ -84,12 +89,21 @@ namespace Antymology.Terrain
             GenerateAnts();
         }
 
-        /// <summary>
+        /// <summary>[
         /// TO BE IMPLEMENTED BY YOU
         /// </summary>
         private void GenerateAnts()
         {
-            
+            // TODO: Setup ants using variables to always start them in the middle of the area
+            // Potential resource:
+            // https://stackoverflow.com/q/27504492/13086391 
+            for (int i = 0; i < ConfigurationManager.Instance.numAntsToSpawn; i ++)
+            {
+                Instantiate(antPrefab, new Vector3(65, 18, 65), Quaternion.identity);
+            }
+
+            Instantiate(queenPrefab, new Vector3(65, 18, 65), Quaternion.identity);
+
         }
 
         #endregion
