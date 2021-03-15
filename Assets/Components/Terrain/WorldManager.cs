@@ -99,10 +99,10 @@ namespace Antymology.Terrain
             // https://stackoverflow.com/q/27504492/13086391 
             for (int i = 0; i < ConfigurationManager.Instance.numAntsToSpawn; i ++)
             {
-                Instantiate(antPrefab, new Vector3(65, 18, 65), Quaternion.identity);
+                Instantiate(antPrefab, new Vector3(64, 15, 66), Quaternion.identity);
             }
 
-            Instantiate(queenPrefab, new Vector3(65, 18, 65), Quaternion.identity);
+            //Instantiate(queenPrefab, new Vector3(65, 17.26f, 68.63f), Quaternion.identity);
 
         }
 
