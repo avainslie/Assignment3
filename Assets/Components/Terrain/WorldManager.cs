@@ -129,6 +129,8 @@ namespace Antymology.Terrain
             return Blocks[WorldXCoordinate, WorldYCoordinate, WorldZCoordinate];
         }
 
+       
+
         /// <summary>
         /// Retrieves an abstract block type at the desired local coordinates within a chunk.
         /// </summary>
