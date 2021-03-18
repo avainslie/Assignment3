@@ -18,9 +18,13 @@ public class antBehaviour : MonoBehaviour
 
     private System.Random RNG;
 
-  
+    private bool standingOnAcidicBlock;
+
+
     [SerializeField] float _timeToWaitInbetween;
     private float _waitTimer;
+
+   
 
 
     private void Awake()
@@ -30,6 +34,9 @@ public class antBehaviour : MonoBehaviour
 
         // Generate new random number generator
         RNG = new System.Random(ConfigurationManager.Instance.Seed);
+
+        // Will get updated very quickly if it should be true
+        standingOnAcidicBlock = false;
 
     }
 
@@ -97,10 +104,12 @@ public class antBehaviour : MonoBehaviour
     }
 
 
-
+    // When moving from one black to another, ants are not allowed to move to a
+    // block that is greater than 2 units in height difference
     private void OnCollisionEnter(Collision collision)
     {
        
+
         transform.Translate(Vector3.up, Space.World);
 
 
@@ -110,6 +119,14 @@ public class antBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Ants may give some of their health to other ants occupying the same space (must be a zero-sum exchange)
+        if (other.CompareTag("ant"))
+        {
+            // Share health
+            // Need reference to antBehaviour script on other ant
+            
+        }
+
         // Why does this give the same height no matter where you are? Height of chunk??
         Debug.Log(other.GetComponent<Renderer>().bounds.size);
     }
@@ -130,23 +147,17 @@ public class antBehaviour : MonoBehaviour
 
 
         //Debug.Log("And at 0, 0, 0 it is: " + WorldManager.Instance.GetBlock(0, 0, 0).GetType());
-
-
-        if (ab.GetType().Equals(typeof(Antymology.Terrain.AirBlock)))
+        
+        if (ab.GetType().Equals(typeof(Antymology.Terrain.MulchBlock)))
         {
-
-            // Do nothing
-        }
-        else if (ab.GetType().Equals(typeof(Antymology.Terrain.MulchBlock)))
-        {
+            standingOnAcidicBlock = false;
             consumeMulch(x ,y ,z);
-       
         }
         else if (ab.GetType().Equals(typeof(Antymology.Terrain.AcidicBlock)))
         {
-
-            // Do nothing
+            standingOnAcidicBlock = true;
         }
+        else { standingOnAcidicBlock = false; }
 
 
     }
@@ -155,7 +166,15 @@ public class antBehaviour : MonoBehaviour
 
     private void lowerAntHealthFixedAmount()
     {
-        health -= 5f;
+        if (standingOnAcidicBlock)
+        {
+            health -= 10f;
+        }
+        else
+        {
+            health -= 5f;
+        }
+        
     }
 
     // Checks if ant is dead and should be removed
@@ -176,6 +195,17 @@ public class antBehaviour : MonoBehaviour
         // Replace mulch block with airblock
         WorldManager.Instance.SetBlock(xMulchBlock, yMulchBlock, zMulchBlock, new AirBlock());
         
+    }
+
+    // Remove block from world by digging it
+    private void digBlock(AbstractBlock currentBlock, int xBlockToDig, int yBlockToDig, int zBlockToDig)
+    {
+        if (!currentBlock.GetType().Equals(typeof(Antymology.Terrain.ContainerBlock)))
+        {
+            WorldManager.Instance.SetBlock(xBlockToDig, yBlockToDig, zBlockToDig, new AirBlock());
+        }
+       
+
     }
 
 
