@@ -15,13 +15,11 @@ namespace Antymology.AgentScripts
     public class antManager : MonoBehaviour
     {
 
-
         private Rigidbody rigidbody;
 
         private System.Random RNG;
 
         private AntHealth antHealth;
-
 
         [SerializeField] float _timeToWaitInbetween;
         private float _waitTimer;
@@ -29,14 +27,13 @@ namespace Antymology.AgentScripts
 
         private void Awake()
         {
-            antHealth = new AntHealth();
-
             // Generate new random number generator
             RNG = new System.Random(ConfigurationManager.Instance.Seed);
 
+            antHealth = GetComponent<AntHealth>();
+
             // Will get updated very quickly if it should be true
             antHealth.standingOnAcidicBlock = false;
-
             
 
         }
@@ -55,7 +52,7 @@ namespace Antymology.AgentScripts
             // TODO: SHOULD ONLY CHECK BLOCK DIRECTLY UNDER ANT
             checkWhatBlockAntIsOn();
 
-    
+          
         }
 
         // Only moves ants every X seconds, set in Inspector
