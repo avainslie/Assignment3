@@ -354,7 +354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd0fdbaf66dc1a4488d999aa299645f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  antPrefab: {fileID: 122329575065265069, guid: f1e88ac1abd924a10a487f043764f30f,
+  antPrefab: {fileID: 8343455253727902418, guid: 802a7c0e1e7314ae7aafe21483849689,
     type: 3}
   queenPrefab: {fileID: 8286566383985044230, guid: b58926383ff1e4a4e987841b44d3af24,
     type: 3}

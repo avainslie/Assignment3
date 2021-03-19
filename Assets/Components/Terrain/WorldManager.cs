@@ -89,20 +89,72 @@ namespace Antymology.Terrain
             GenerateAnts();
         }
 
+        private int[] GenerateRandomWorldCoordinates()
+        {
+            int[] coordinatesForAntInstantiation = new int[3];
+
+            int WorldXCoordinate = RNG.Next(0, Blocks.GetLength(0));
+            int WorldZCoordinate = RNG.Next(0, Blocks.GetLength(2));
+
+            int WorldYCoordinate = getHeightAt(WorldXCoordinate, WorldZCoordinate) + 1;
+
+            // Copied from code below
+            if
+            (
+                WorldXCoordinate < 0 ||
+                WorldYCoordinate < 0 ||
+                WorldZCoordinate < 0 ||
+                WorldXCoordinate > Blocks.GetLength(0) ||
+                WorldYCoordinate > Blocks.GetLength(1) ||
+                WorldZCoordinate > Blocks.GetLength(2)
+            )
+                GenerateRandomWorldCoordinates();
+            
+            coordinatesForAntInstantiation[0] = WorldXCoordinate;
+            coordinatesForAntInstantiation[1] = WorldYCoordinate;
+            coordinatesForAntInstantiation[2] = WorldZCoordinate;
+
+            return coordinatesForAntInstantiation;
+        }
+
+
+        private int getHeightAt(int WorldXCoordinate, int WorldZCoordinate)
+        {
+            int retVal = -1;
+
+            // Blocks.GetLength(1) - 1 is the height of the world
+            for (int j = Blocks.GetLength(1) - 1; j >= 0; j--)
+            {
+                // If conversion is not possible, "as" returns null 
+                if ((Blocks[WorldXCoordinate, j, WorldZCoordinate] as AirBlock) == null)
+                {
+                    // Return the y coordinate of the first non air block we hit
+                    retVal = j;
+                    break;
+                }
+            }
+
+            return retVal;
+        }
+
+
+
         /// <summary>[
         /// TO BE IMPLEMENTED BY YOU
         /// </summary>
         private void GenerateAnts()
         {
-            // TODO: Setup ants using variables to always start them in the middle of the area
-            // Potential resource:
-            // https://stackoverflow.com/q/27504492/13086391 
             for (int i = 0; i < ConfigurationManager.Instance.numAntsToSpawn; i ++)
             {
-                Instantiate(antPrefab, new Vector3(64, 15, 66), Quaternion.identity);
+                int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
+
+                // Subtract a little from the y to accommodate for the weird ant prefab
+                Instantiate(antPrefab, new Vector3(coordinatesForAntInstantiation[0], coordinatesForAntInstantiation[1] - 0.17f, coordinatesForAntInstantiation[2]), Quaternion.identity);
+
             }
 
-            //Instantiate(queenPrefab, new Vector3(65, 17.26f, 68.63f), Quaternion.identity);
+            //int[] coordinatesForAntInstantiation = GenerateRandomCoordinates();
+            //Instantiate(queenPrefab, new Vector3(coordinatesForAntInstantiation[0], coordinatesForAntInstantiation[1], coordinatesForAntInstantiation[2]), Quaternion.identity);
 
         }
 

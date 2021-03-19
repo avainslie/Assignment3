@@ -110,12 +110,12 @@ namespace Antymology.AgentScripts
         private void OnTriggerEnter(Collider other)
         {
             // Ants may give some of their health to other ants occupying the same space (must be a zero-sum exchange)
-            if (other.CompareTag("ant"))
-            {
+            //if (other.CompareTag("ant"))
+            //{
                 // Share health
                 // Need reference to antBehaviour script on other ant
 
-            }
+            //}
 
             // Why does this give the same height no matter where you are? Height of chunk??
             Debug.Log(other.GetComponent<Renderer>().bounds.size);
