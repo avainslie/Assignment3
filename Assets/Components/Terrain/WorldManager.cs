@@ -150,7 +150,7 @@ namespace Antymology.Terrain
                 int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
 
                 // Subtract a little from the y to accommodate for the weird ant prefab
-                Instantiate(antPrefab, new Vector3(coordinatesForAntInstantiation[0], coordinatesForAntInstantiation[1] - 0.17f, coordinatesForAntInstantiation[2]), Quaternion.identity);
+                Instantiate(antPrefab, new Vector3(coordinatesForAntInstantiation[0], coordinatesForAntInstantiation[1] - 0.18f, coordinatesForAntInstantiation[2]), Quaternion.identity);
 
             }
 

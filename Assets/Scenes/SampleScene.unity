@@ -394,4 +394,4 @@ MonoBehaviour:
   Acidic_Region_Radius: 5
   Number_Of_Conatiner_Spheres: 5
   Conatiner_Sphere_Radius: 10
-  numAntsToSpawn: 10
+  numAntsToSpawn: 1

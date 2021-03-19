@@ -45,10 +45,11 @@ namespace Antymology.AgentScripts
         }
 
 
-        void FixedUpdate()
+        void Update()
         {
 
             checkWhatBlockAntIsOn();
+            
         }
 
         #region MOVEMENT
@@ -91,13 +92,62 @@ namespace Antymology.AgentScripts
             checkWhatBlockAntIsOn();
         }
 
-        // Learned from office hours w/Cooper
+        // Some code learned from office hours w/Cooper
         // When moving from one black to another, ants are not allowed to move to a
         // block that is greater than 2 units in height difference
-        private void checkBlocksHeight()
+        private void checkBlocksHeight(int xCoord, int yCoord, int zCoord)
         {
-            int[] neighbourYCoords = new int[9];
+            int[] neighbourYCoords = new int[8];
 
+            int[][] neighbourXZCoords = new int[][]
+            {
+                new int[] { xCoord - 1, zCoord + 1 },
+                new int[] { xCoord, zCoord + 1 },
+                new int[] { xCoord + 1, zCoord+1 },
+                new int[] { xCoord - 1, zCoord },
+                new int[] { xCoord + 1, zCoord },
+                new int[] { xCoord - 1, zCoord - 1 },
+                new int[] { xCoord, zCoord - 1 },
+                new int[] { xCoord + 1, zCoord - 1 }
+            };
+
+            // Max 8 directions, 3 int in each direction
+            // TODO: NULL CHECK WHEN PICKING A DIRECTION FROM THIS ARRAY
+            int[][] possibleDirections = new int[8][];
+
+            possibleDirections[0] = new int[3];
+            possibleDirections[1] = new int[3];
+            possibleDirections[2] = new int[3];
+            possibleDirections[3] = new int[3];
+            possibleDirections[4] = new int[3];
+            possibleDirections[5] = new int[3];
+            possibleDirections[6] = new int[3];
+            possibleDirections[7] = new int[3];
+
+            for (int i = 0; i < 8; i++)
+            {
+                neighbourYCoords[i] = WorldManager.Instance.getHeightAt(neighbourXZCoords[i][0], neighbourXZCoords[i][1]);
+            }
+      
+         
+            for (int i = 0; i < neighbourYCoords.Length; i ++)
+            {
+                // If the difference between the neighbouring block and current block is less than 2 units
+                if (Mathf.Abs(neighbourYCoords[i] - yCoord) < 2)
+                {
+                    // x coord of the neighbour
+                    possibleDirections[i][0] = neighbourXZCoords[i][0];
+                    // possible y
+                    possibleDirections[i][1] = neighbourYCoords[i];
+                    // possible z
+                    possibleDirections[i][2] = neighbourXZCoords[i][1];
+
+                    Debug.Log("Ant can move to the block");
+                }
+                    
+                else if (Mathf.Abs(neighbourYCoords[i] - yCoord) > 2)
+                    Debug.Log("NO MOVEMENT");
+            }
 
         }
         #endregion
@@ -112,6 +162,8 @@ namespace Antymology.AgentScripts
             int x = pos[0];
             int y = pos[1];
             int z = pos[2];
+
+            checkBlocksHeight(x, y, z);
 
             //Debug.Log("x:" + x + "y"+ y+"z"+z);
 
@@ -161,7 +213,7 @@ namespace Antymology.AgentScripts
         {
             int[] neighbourYCoords = new int[9];
 
-            //neighbourYCoords[0] = WorldManager.Instance.getHeightAt();
+        
         }
 
 
