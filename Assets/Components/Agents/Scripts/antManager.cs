@@ -33,8 +33,7 @@ namespace Antymology.AgentScripts
             antHealth = GetComponent<AntHealth>();
 
             // Will get updated very quickly if it should be true
-            antHealth.standingOnAcidicBlock = false;
-            
+            antHealth.standingOnAcidicBlock = false;            
 
         }
 
@@ -48,12 +47,11 @@ namespace Antymology.AgentScripts
 
         void FixedUpdate()
         {
-           
-            // TODO: SHOULD ONLY CHECK BLOCK DIRECTLY UNDER ANT
-            checkWhatBlockAntIsOn();
 
-          
+            checkWhatBlockAntIsOn();
         }
+
+        #region MOVEMENT
 
         // Only moves ants every X seconds, set in Inspector
         private void moveAnt()
@@ -93,33 +91,19 @@ namespace Antymology.AgentScripts
             checkWhatBlockAntIsOn();
         }
 
-
+        // Learned from office hours w/Cooper
         // When moving from one black to another, ants are not allowed to move to a
         // block that is greater than 2 units in height difference
-        private void OnCollisionEnter(Collision collision)
+        private void checkBlocksHeight()
         {
+            int[] neighbourYCoords = new int[9];
 
-
-            transform.Translate(Vector3.up, Space.World);
-
-
-            //transform.Rotate(0, 90, 0);
 
         }
+        #endregion
 
-        private void OnTriggerEnter(Collider other)
-        {
-            // Ants may give some of their health to other ants occupying the same space (must be a zero-sum exchange)
-            //if (other.CompareTag("ant"))
-            //{
-                // Share health
-                // Need reference to antBehaviour script on other ant
 
-            //}
-
-            // Why does this give the same height no matter where you are? Height of chunk??
-            Debug.Log(other.GetComponent<Renderer>().bounds.size);
-        }
+        #region INTERACT WITH BLOCKS
 
         private void checkWhatBlockAntIsOn()
         {
@@ -129,14 +113,12 @@ namespace Antymology.AgentScripts
             int y = pos[1];
             int z = pos[2];
 
+            //Debug.Log("x:" + x + "y"+ y+"z"+z);
+
             AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
+    
+            //Debug.Log("The type of block is " + ab.GetType()); 
 
-            // Gets an air block since its getting y value of a bit higher off the ground,
-            // not right below. so should subtract a value each time to account for this
-            //Debug.Log("The type of block is " + ab.GetType()); // The type of block is Antymology.Terrain.AirBlock
-
-
-            //Debug.Log("And at 0, 0, 0 it is: " + WorldManager.Instance.GetBlock(0, 0, 0).GetType());
 
             if (ab.GetType().Equals(typeof(Antymology.Terrain.MulchBlock)))
             {
@@ -155,8 +137,12 @@ namespace Antymology.AgentScripts
 
         private void consumeMulch(int xMulchBlock, int yMulchBlock, int zMulchBlock)
         {
-            antHealth.health += 5;
+
+            antHealth.eatMulchGainHealth();
+            
+            
             Debug.Log("ON A MULCH");
+
             // Replace mulch block with airblock
             WorldManager.Instance.SetBlock(xMulchBlock, yMulchBlock, zMulchBlock, new AirBlock());
 
@@ -169,11 +155,44 @@ namespace Antymology.AgentScripts
             {
                 WorldManager.Instance.SetBlock(xBlockToDig, yBlockToDig, zBlockToDig, new AirBlock());
             }
-
-
         }
 
+        private void checkNeighbours()
+        {
+            int[] neighbourYCoords = new int[9];
+
+            //neighbourYCoords[0] = WorldManager.Instance.getHeightAt();
+        }
+
+
+        #endregion
+
+        #region COLLISIONS
+
+        private void OnTriggerEnter(Collider other)
+        {
+            Debug.Log("SOMETHING COLLIDED");
+            // Ants may give some of their health to other ants occupying the same space (must be a zero-sum exchange)
+            if (other.CompareTag("ant"))
+            {
+                Debug.Log("AN ANT COLLIDED");
+                antHealth.canEat = false;
+
+                // Share health
+                // Need reference to antBehaviour script on other ant
+
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            antHealth.canEat = true;
+        }
+
+        #endregion
     }
+
+
 
     /* REFERENCES
      * 

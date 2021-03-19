@@ -11,11 +11,15 @@ namespace Antymology.AgentScripts
 
         public bool standingOnAcidicBlock;
 
+        private float maxHealth;
+
+        public bool canEat;
 
         // Use this for initialization
         void Awake()
         {
             standingOnAcidicBlock = false;
+            canEat = true;
 
             // Waits 5s to start then calls function in 1st arg every 5s
             InvokeRepeating("lowerAntHealthFixedAmount", 5f, 5f);
@@ -56,6 +60,15 @@ namespace Antymology.AgentScripts
                 return false;
             }
             return true;
+        }
+
+
+        public void eatMulchGainHealth()
+        {
+            if (canEat)
+            {
+                health += 5;
+            }
         }
     }
 

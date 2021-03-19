@@ -117,8 +117,8 @@ namespace Antymology.Terrain
             return coordinatesForAntInstantiation;
         }
 
-
-        private int getHeightAt(int WorldXCoordinate, int WorldZCoordinate)
+        // From office hours w/Cooper
+        public int getHeightAt(int WorldXCoordinate, int WorldZCoordinate)
         {
             int retVal = -1;
 
@@ -141,6 +141,7 @@ namespace Antymology.Terrain
 
         /// <summary>[
         /// TO BE IMPLEMENTED BY YOU
+        /// Edited from office hours w/Cooper
         /// </summary>
         private void GenerateAnts()
         {
