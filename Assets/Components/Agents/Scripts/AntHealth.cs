@@ -73,7 +73,18 @@ namespace Antymology.AgentScripts
             }
         }
 
-        public void shareHealth() { }
+        public float shareHealth(float otherAntHealth)
+        {
+            health -= 5;
+            
+            return 5;
+
+        }
+
+        public void costQueenHealth()
+        {
+            health -= (maxHealth / 3);
+        }
 
         #endregion
 

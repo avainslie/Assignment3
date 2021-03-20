@@ -22,11 +22,14 @@ namespace Antymology.AgentScripts
 
         private AntHealth antHealth;
 
-        [SerializeField] float _timeToWaitInbetween;
-        private float _waitTimer;
+        private AntHealth otherAntHealth;
+
 
 
         private float digProbability;
+
+        [SerializeField] float _timeToWaitInbetween;
+        private float _waitTimer;
 
         private void Awake()
         {
@@ -36,7 +39,9 @@ namespace Antymology.AgentScripts
             antHealth = GetComponent<AntHealth>();
 
             // Will get updated very quickly if it should be true
-            antHealth.standingOnAcidicBlock = false;            
+            antHealth.standingOnAcidicBlock = false;
+
+            otherAntHealth = GetComponent<AntHealth>();
 
         }
 
@@ -54,12 +59,9 @@ namespace Antymology.AgentScripts
             //checkWhatBlockAntIsOn();
             moveAnt();
 
-  
-
-
         }
 
-        private int[] getCurrentWorldXYZAnt()
+        public int[] getCurrentWorldXYZAnt()
         {
             int[] currentXYZWorldAntCoord = AntPosition.getAntCurrentPosition(transform.position);
 
@@ -68,16 +70,15 @@ namespace Antymology.AgentScripts
 
         #region MOVEMENT
 
+
         // Only moves ants every X seconds, set in Inspector
-        private void moveAnt()
+        public void moveAnt()
         {
 
             if (_waitTimer >= _timeToWaitInbetween)
             {
                 // TEMPORARY CODE TO MOVE ANTS AROUND AND BUILD OTHER METHODS
                 double r = RNG.NextDouble() * 100;
-
-                
 
                 //if (r >= 60)
                 //{
@@ -103,12 +104,16 @@ namespace Antymology.AgentScripts
                 // Get possible directions to move in based on current position
                 int[][] possibleDirections = getPossibleDirections(x, y, z);
 
+                int direction = 0;
+
                 // If there is actually a place to move
                 if (possibleDirections != null)
                 {
-                    // Gets a random int between 0 and the length of the possibleDirections list
-                    int direction = (int)RNG.Next(possibleDirections.Length - 1);
+                    if (possibleDirections.Length > 1)
+                        // Gets a random int between 0 and the length of the possibleDirections list
+                        direction = RNG.Next(possibleDirections.Length - 1);
 
+                    // TODO: SOLVE THE ERROR THAT COMES UP HERE "IndexOutOfRangeException: Index was outside the bounds of the array."
 
                     x = possibleDirections[direction][0];
 
@@ -116,22 +121,20 @@ namespace Antymology.AgentScripts
 
                     z = possibleDirections[direction][2];
 
+                    // TODO: ADD IN ROTATION/DIRECTION OF ANTS MOVEMENT
+
                     // Select a random direction to go to out of possible options
                     transform.position = new Vector3(x, y, z);
+
+                    // Everytime ant moves, check where he is
+                    checkWhatBlockAntIsOn();
                 }
-
-    
-                _waitTimer = 0f;
-
+                 _waitTimer = 0f;
             }
             else
             {
                 _waitTimer += 1 * Time.deltaTime;
-            }
-
-
-            // Everytime ant moves, check where he is
-            checkWhatBlockAntIsOn();
+            } 
         }
 
         // Some code learned from office hours w/Cooper
@@ -171,9 +174,9 @@ namespace Antymology.AgentScripts
             {
                 neighbourYCoords[i] = WorldManager.Instance.getHeightAt(neighbourXZCoords[i][0], neighbourXZCoords[i][1]);
             }
-      
+
             // Check all the neighbour y coordinates
-            for (int i = 0; i < neighbourYCoords.Length; i ++)
+            for (int i = 0; i < neighbourYCoords.Length; i++)
             {
                 // If the difference between the neighbouring block and current block is less than 2 units
                 // save the coordinates as a possible direction to move in
@@ -188,7 +191,7 @@ namespace Antymology.AgentScripts
 
                     Debug.Log("Ant can move to the block");
                 }
-                    
+
                 else if (Mathf.Abs(neighbourYCoords[i] - yCoord) > 2)
                     Debug.Log("NO MOVEMENT");
             }
@@ -210,7 +213,7 @@ namespace Antymology.AgentScripts
             {
                 Debug.Log("THERE IS NOTHING HERE TO MOVE TO");
                 return null;
-                
+
             }
 
             int[][] possibleDirectionsNoZeros = new int[whereToSlice - 1][];
@@ -219,12 +222,13 @@ namespace Antymology.AgentScripts
             {
                 possibleDirectionsNoZeros[i] = possibleDirections[i];
             }
-                
+
 
 
             return possibleDirectionsNoZeros;
 
         }
+
         #endregion
 
 
@@ -315,8 +319,7 @@ namespace Antymology.AgentScripts
                 antHealth.canEat = false;
 
                 // Need reference to antBehaviour script on other ant, pass as argument
-                antHealth.shareHealth();
-                
+                otherAntHealth.health += antHealth.shareHealth(otherAntHealth.health);
 
             }
         }
