@@ -104,16 +104,16 @@ namespace Antymology.AgentScripts
                 // Get possible directions to move in based on current position
                 int[][] possibleDirections = getPossibleDirections(x, y, z);
 
+                // Use the direction variable to select an array from the possibleDirections jagged array to move to
                 int direction = 0;
 
                 // If there is actually a place to move
                 if (possibleDirections != null)
                 {
+                    // If there is multiple places to move, not just one
                     if (possibleDirections.Length > 1)
-                        // Gets a random int between 0 and the length of the possibleDirections list
-                        direction = RNG.Next(possibleDirections.Length - 1);
-
-                    // TODO: SOLVE THE ERROR THAT COMES UP HERE "IndexOutOfRangeException: Index was outside the bounds of the array."
+                        // Gets a random 
+                        direction = RNG.Next(0, possibleDirections.Length - 1);
 
                     x = possibleDirections[direction][0];
 
@@ -157,17 +157,14 @@ namespace Antymology.AgentScripts
             };
 
             // Max 8 directions, 3 int in each direction
-            // When initializing an array in c#, all values will be 0. So we will need to remove those.
+            // When initializing an array in c#, all values will be 0. So we will need to remove those later.
             int[][] possibleDirections = new int[8][];
 
-            possibleDirections[0] = new int[3];
-            possibleDirections[1] = new int[3];
-            possibleDirections[2] = new int[3];
-            possibleDirections[3] = new int[3];
-            possibleDirections[4] = new int[3];
-            possibleDirections[5] = new int[3];
-            possibleDirections[6] = new int[3];
-            possibleDirections[7] = new int[3];
+            for (int i = 0; i < 8; i++)
+            {
+                possibleDirections[i] = new int[3];
+            }
+
 
             // Find y coordinate of each neighbour
             for (int i = 0; i < 8; i++)
@@ -188,17 +185,16 @@ namespace Antymology.AgentScripts
                     possibleDirections[i][1] = neighbourYCoords[i];
                     // z coord of the neighbour
                     possibleDirections[i][2] = neighbourXZCoords[i][1];
-
-                    Debug.Log("Ant can move to the block");
                 }
-
-                else if (Mathf.Abs(neighbourYCoords[i] - yCoord) > 2)
-                    Debug.Log("NO MOVEMENT");
             }
 
+            // Now we have a jagged array of all the possible moves ant can make.
+            // If array not full of moves, than the "empty" spots are occupied by zeros
+
+            // Default where to "slice" the jagged array
             int whereToSlice = 8;
 
-            // Save only the non-all-zero arrays from the possibleDirections
+            // Set whereToSlice to the first all zero sub array in jagged array
             for (int i = 0; i < possibleDirections.Length; i++)
             {
                 if (possibleDirections[i].Sum() == 0)
@@ -215,18 +211,16 @@ namespace Antymology.AgentScripts
                 return null;
 
             }
-
-            int[][] possibleDirectionsNoZeros = new int[whereToSlice - 1][];
-
-            for (int i = 0; i < possibleDirectionsNoZeros.Length; i++)
-            {
-                possibleDirectionsNoZeros[i] = possibleDirections[i];
+            // whereToSlice can = 1 through 8
+            else {
+                int[][] possibleDirectionsNoZeros = new int[whereToSlice][];
+                
+                for (int i = 0; i < possibleDirectionsNoZeros.Length; i++)
+                {
+                    possibleDirectionsNoZeros[i] = possibleDirections[i];
+                }
+                return possibleDirectionsNoZeros;
             }
-
-
-
-            return possibleDirectionsNoZeros;
-
         }
 
         #endregion
