@@ -15,6 +15,8 @@ namespace Antymology.AgentScripts
 
         public bool canEat;
 
+        
+
         // Use this for initialization
         void Awake()
         {
@@ -62,7 +64,7 @@ namespace Antymology.AgentScripts
             return true;
         }
 
-
+        #region PUBLIC METHODS 
         public void eatMulchGainHealth()
         {
             if (canEat)
@@ -70,6 +72,12 @@ namespace Antymology.AgentScripts
                 health += 5;
             }
         }
+
+        public void shareHealth() { }
+
+        #endregion
+
+
     }
 
 }

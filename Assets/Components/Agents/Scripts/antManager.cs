@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Antymology.Helpers;
 using Antymology.Terrain;
+using System.Linq; 
 
 namespace Antymology.AgentScripts
 {
@@ -50,8 +51,19 @@ namespace Antymology.AgentScripts
         void Update()
         {
 
-            checkWhatBlockAntIsOn();
-            
+            //checkWhatBlockAntIsOn();
+            moveAnt();
+
+  
+
+
+        }
+
+        private int[] getCurrentWorldXYZAnt()
+        {
+            int[] currentXYZWorldAntCoord = AntPosition.getAntCurrentPosition(transform.position);
+
+            return currentXYZWorldAntCoord;
         }
 
         #region MOVEMENT
@@ -65,22 +77,50 @@ namespace Antymology.AgentScripts
                 // TEMPORARY CODE TO MOVE ANTS AROUND AND BUILD OTHER METHODS
                 double r = RNG.NextDouble() * 100;
 
-                if (r >= 60)
+                
+
+                //if (r >= 60)
+                //{
+                //    transform.Translate(Vector3.forward, Space.World);
+                //}
+                //else if (r < 60 && r >= 5)
+                //{
+                //    //transform.Rotate(0, 90, 0);
+                //    transform.Translate(Vector3.forward, Space.World);
+                //}
+                //else
+                //{
+                //    //transform.Rotate(0, 180, 0);
+                //    transform.Translate(Vector3.forward, Space.World);
+                //}
+
+                int[] pos = getCurrentWorldXYZAnt();
+
+                int x = pos[0];
+                int y = pos[1];
+                int z = pos[2];
+
+                // Get possible directions to move in based on current position
+                int[][] possibleDirections = getPossibleDirections(x, y, z);
+
+                // If there is actually a place to move
+                if (possibleDirections != null)
                 {
-                    transform.Translate(Vector3.forward, Space.World);
-                }
-                else if (r < 60 && r >= 5)
-                {
-                    //transform.Rotate(0, 90, 0);
-                    transform.Translate(Vector3.forward, Space.World);
-                }
-                else
-                {
-                    //transform.Rotate(0, 180, 0);
-                    transform.Translate(Vector3.forward, Space.World);
-                }
+                    // Gets a random int between 0 and the length of the possibleDirections list
+                    int direction = (int)RNG.Next(possibleDirections.Length - 1);
 
 
+                    x = possibleDirections[direction][0];
+
+                    y = possibleDirections[direction][1];
+
+                    z = possibleDirections[direction][2];
+
+                    // Select a random direction to go to out of possible options
+                    transform.position = new Vector3(x, y, z);
+                }
+
+    
                 _waitTimer = 0f;
 
             }
@@ -97,7 +137,7 @@ namespace Antymology.AgentScripts
         // Some code learned from office hours w/Cooper
         // When moving from one black to another, ants are not allowed to move to a
         // block that is greater than 2 units in height difference
-        private int[][] checkBlocksHeight(int xCoord, int yCoord, int zCoord)
+        private int[][] getPossibleDirections(int xCoord, int yCoord, int zCoord)
         {
             int[] neighbourYCoords = new int[8];
 
@@ -114,7 +154,7 @@ namespace Antymology.AgentScripts
             };
 
             // Max 8 directions, 3 int in each direction
-            // TODO: NULL CHECK WHEN PICKING A DIRECTION FROM THIS ARRAY FOR A DIRECTION TO MOVE IN
+            // When initializing an array in c#, all values will be 0. So we will need to remove those.
             int[][] possibleDirections = new int[8][];
 
             possibleDirections[0] = new int[3];
@@ -153,7 +193,36 @@ namespace Antymology.AgentScripts
                     Debug.Log("NO MOVEMENT");
             }
 
-            return possibleDirections;
+            int whereToSlice = 8;
+
+            // Save only the non-all-zero arrays from the possibleDirections
+            for (int i = 0; i < possibleDirections.Length; i++)
+            {
+                if (possibleDirections[i].Sum() == 0)
+                {
+                    whereToSlice = i;
+                    break;
+                }
+            }
+
+            // Deal with case where there is nowhere to move
+            if (whereToSlice == 0)
+            {
+                Debug.Log("THERE IS NOTHING HERE TO MOVE TO");
+                return null;
+                
+            }
+
+            int[][] possibleDirectionsNoZeros = new int[whereToSlice - 1][];
+
+            for (int i = 0; i < possibleDirectionsNoZeros.Length; i++)
+            {
+                possibleDirectionsNoZeros[i] = possibleDirections[i];
+            }
+                
+
+
+            return possibleDirectionsNoZeros;
 
         }
         #endregion
@@ -163,13 +232,13 @@ namespace Antymology.AgentScripts
 
         private void checkWhatBlockAntIsOn()
         {
-            int[] pos = AntPosition.getAntCurrentPosition(transform.position);
+            int[] pos = getCurrentWorldXYZAnt();
 
             int x = pos[0];
             int y = pos[1];
             int z = pos[2];
 
-            checkBlocksHeight(x, y, z);
+            getPossibleDirections(x, y, z);
 
             //Debug.Log("x:" + x + "y"+ y+"z"+z);
 
@@ -245,8 +314,9 @@ namespace Antymology.AgentScripts
                 Debug.Log("AN ANT COLLIDED");
                 antHealth.canEat = false;
 
-                // Share health
-                // Need reference to antBehaviour script on other ant
+                // Need reference to antBehaviour script on other ant, pass as argument
+                antHealth.shareHealth();
+                
 
             }
         }
