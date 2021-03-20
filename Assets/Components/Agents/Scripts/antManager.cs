@@ -25,6 +25,8 @@ namespace Antymology.AgentScripts
         private float _waitTimer;
 
 
+        private float digProbability;
+
         private void Awake()
         {
             // Generate new random number generator
@@ -95,7 +97,7 @@ namespace Antymology.AgentScripts
         // Some code learned from office hours w/Cooper
         // When moving from one black to another, ants are not allowed to move to a
         // block that is greater than 2 units in height difference
-        private void checkBlocksHeight(int xCoord, int yCoord, int zCoord)
+        private int[][] checkBlocksHeight(int xCoord, int yCoord, int zCoord)
         {
             int[] neighbourYCoords = new int[8];
 
@@ -112,7 +114,7 @@ namespace Antymology.AgentScripts
             };
 
             // Max 8 directions, 3 int in each direction
-            // TODO: NULL CHECK WHEN PICKING A DIRECTION FROM THIS ARRAY
+            // TODO: NULL CHECK WHEN PICKING A DIRECTION FROM THIS ARRAY FOR A DIRECTION TO MOVE IN
             int[][] possibleDirections = new int[8][];
 
             possibleDirections[0] = new int[3];
@@ -124,22 +126,24 @@ namespace Antymology.AgentScripts
             possibleDirections[6] = new int[3];
             possibleDirections[7] = new int[3];
 
+            // Find y coordinate of each neighbour
             for (int i = 0; i < 8; i++)
             {
                 neighbourYCoords[i] = WorldManager.Instance.getHeightAt(neighbourXZCoords[i][0], neighbourXZCoords[i][1]);
             }
       
-         
+            // Check all the neighbour y coordinates
             for (int i = 0; i < neighbourYCoords.Length; i ++)
             {
                 // If the difference between the neighbouring block and current block is less than 2 units
+                // save the coordinates as a possible direction to move in
                 if (Mathf.Abs(neighbourYCoords[i] - yCoord) < 2)
                 {
                     // x coord of the neighbour
                     possibleDirections[i][0] = neighbourXZCoords[i][0];
-                    // possible y
+                    // y coord of the neighbour
                     possibleDirections[i][1] = neighbourYCoords[i];
-                    // possible z
+                    // z coord of the neighbour
                     possibleDirections[i][2] = neighbourXZCoords[i][1];
 
                     Debug.Log("Ant can move to the block");
@@ -148,6 +152,8 @@ namespace Antymology.AgentScripts
                 else if (Mathf.Abs(neighbourYCoords[i] - yCoord) > 2)
                     Debug.Log("NO MOVEMENT");
             }
+
+            return possibleDirections;
 
         }
         #endregion
@@ -168,11 +174,20 @@ namespace Antymology.AgentScripts
             //Debug.Log("x:" + x + "y"+ y+"z"+z);
 
             AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
-    
+
             //Debug.Log("The type of block is " + ab.GetType()); 
 
+            // Always changes
+            // TODO: MAKE THIS PROBABILITY PART OF THE "GENOME" 
+            digProbability = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble() * 100;
 
-            if (ab.GetType().Equals(typeof(Antymology.Terrain.MulchBlock)))
+            // 20% probability to dig the block
+            if (digProbability > 80f)
+            {
+                digBlock(ab, x, y, z);
+                antHealth.standingOnAcidicBlock = false;
+            }
+            else if (ab.GetType().Equals(typeof(Antymology.Terrain.MulchBlock)))
             {
                 antHealth.standingOnAcidicBlock = false;
                 consumeMulch(x, y, z);
