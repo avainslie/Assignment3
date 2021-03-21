@@ -106,7 +106,13 @@ namespace Antymology.Terrain
                 WorldZCoordinate < 0 ||
                 WorldXCoordinate > Blocks.GetLength(0) ||
                 WorldYCoordinate > Blocks.GetLength(1) ||
-                WorldZCoordinate > Blocks.GetLength(2)
+                WorldZCoordinate > Blocks.GetLength(2) ||
+                // Lines below should theoretically prevent ant from instantiating on world edge container block???
+                WorldXCoordinate == 0 ||
+                WorldXCoordinate >= Blocks.GetLength(0) - 1 ||
+                WorldZCoordinate == 0 ||
+                WorldZCoordinate >= Blocks.GetLength(2) - 1 ||
+                WorldYCoordinate == 0
             )
                 GenerateRandomWorldCoordinates();
             
@@ -137,8 +143,7 @@ namespace Antymology.Terrain
             return retVal;
         }
 
-
-
+     
         /// <summary>[
         /// TO BE IMPLEMENTED BY YOU
         /// Edited from office hours w/Cooper
@@ -151,11 +156,10 @@ namespace Antymology.Terrain
 
                 // Subtract a little from the y to accommodate for the weird ant prefab
                 Instantiate(antPrefab, new Vector3(coordinatesForAntInstantiation[0], coordinatesForAntInstantiation[1] - 0.18f, coordinatesForAntInstantiation[2]), Quaternion.identity);
-
             }
 
-            //int[] coordinatesForAntInstantiation = GenerateRandomCoordinates();
-            //Instantiate(queenPrefab, new Vector3(coordinatesForAntInstantiation[0], coordinatesForAntInstantiation[1], coordinatesForAntInstantiation[2]), Quaternion.identity);
+            int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();
+            Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0], coordinatesForQueenAntInstantiation[1], coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
 
         }
 

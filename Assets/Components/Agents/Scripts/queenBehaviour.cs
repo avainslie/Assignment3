@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Antymology.Helpers;
 using Antymology.Terrain;
+using Antymology.UI;
+using TMPro;
 
 namespace Antymology.AgentScripts
 {
@@ -10,22 +12,33 @@ namespace Antymology.AgentScripts
     {
         private AntHealth antHealth;
 
-        // Start is called before the first frame update
-        void Start()
+        private System.Random RNG;
+
+        private void Awake()
         {
-            antHealth = GetComponent<AntHealth>();
+            RNG = new System.Random();
         }
 
+        private void Update()
+        {
+            int r = CustomMath.fastfloor(RNG.NextDouble() * 100);
+            if (r > 80f)
+            {
+                produceNestBlock();
+            }
+        }
 
         private void produceNestBlock()
         {
             int[] pos = getCurrentWorldXYZAnt();
-
+           
             int x = pos[0];
             int y = pos[1];
             int z = pos[2];
 
             WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
+
+            NestBlockUI.addNestBlockToCount();
 
             antHealth.costQueenHealth();
         }

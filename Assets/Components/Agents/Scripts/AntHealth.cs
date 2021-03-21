@@ -22,6 +22,7 @@ namespace Antymology.AgentScripts
         {
             standingOnAcidicBlock = false;
             canEat = true;
+            maxHealth = 100;
 
             // Waits 5s to start then calls function in 1st arg every 5s
             InvokeRepeating("lowerAntHealthFixedAmount", 5f, 5f);
@@ -29,12 +30,18 @@ namespace Antymology.AgentScripts
         }
 
         // Update is called once per frame
-        void FixedUpdate()
+        void Update()
         {
             // Check if ant health at or below 0
             if (!isAntAlive())
             {
                 CancelInvoke("lowerAntHealthFixedAmount");
+            }
+
+            // Ensure health doesn't go over max amount
+            if (health > maxHealth)
+            {
+                health = maxHealth;
             }
         }
 
