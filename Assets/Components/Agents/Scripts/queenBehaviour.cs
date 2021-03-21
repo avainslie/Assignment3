@@ -17,6 +17,7 @@ namespace Antymology.AgentScripts
         private void Awake()
         {
             RNG = new System.Random();
+
         }
 
         private void Update()
@@ -38,7 +39,7 @@ namespace Antymology.AgentScripts
 
             WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
 
-            NestBlockUI.addNestBlockToCount();
+            NestUI.Instance.addNestBlockToCount(); 
 
             antHealth.costQueenHealth();
         }
