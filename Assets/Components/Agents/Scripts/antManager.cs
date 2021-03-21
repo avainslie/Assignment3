@@ -26,8 +26,8 @@ namespace Antymology.AgentScripts
         private float digProbability = 0.25f;
         private float moveProbability = 0.25f;
 
-        [SerializeField] float _timeToWaitInbetween;
-        private float _waitTimer;
+        public float _timeToWaitInbetween;
+        public float _waitTimer;
 
         private void Awake()
         {
@@ -37,8 +37,8 @@ namespace Antymology.AgentScripts
             antHealth = GetComponent<AntHealth>();
 
             // Will get updated very quickly if it should be true
-            antHealth.standingOnAcidicBlock = false;
-
+            checkIfOnAcidicBlock();
+           
             otherAntHealth = GetComponent<AntHealth>();
 
         }
@@ -84,7 +84,7 @@ namespace Antymology.AgentScripts
                 {
                     // If there is multiple places to move, not just one
                     if (possibleDirections.Length > 1)
-                        // Gets a random 
+                        // Gets a random direction from options to move in
                         direction = RNG.Next(0, possibleDirections.Length - 1);
 
                     x = possibleDirections[direction][0];
@@ -103,10 +103,27 @@ namespace Antymology.AgentScripts
                 }
                  _waitTimer = 0f;
             }
-            else
-            {
-                _waitTimer += 1 * Time.deltaTime;
-            } 
+            else { _waitTimer += 1 * Time.deltaTime; } 
+        }
+
+        public void moveAntUpOne()
+        {
+            int[] pos = getCurrentWorldXYZAnt();
+
+            int x = pos[0];
+            int y = pos[1];
+            int z = pos[2];
+            transform.position = new Vector3(x, y + 1, z);
+        }
+
+        public void moveAntDownOne()
+        {
+            int[] pos = getCurrentWorldXYZAnt();
+
+            int x = pos[0];
+            int y = pos[1];
+            int z = pos[2];
+            transform.position = new Vector3(x, y - 1, z);
         }
 
         // Some code learned from office hours w/Cooper
@@ -180,9 +197,7 @@ namespace Antymology.AgentScripts
             // Deal with case where there is nowhere to move
             if (whereToSlice == 0)
             {
-                Debug.Log("THERE IS NOTHING HERE TO MOVE TO");
                 return null;
-
             }
             // whereToSlice can = 1 through 8
             else {
@@ -211,11 +226,7 @@ namespace Antymology.AgentScripts
 
             getPossibleDirections(x, y, z);
 
-            //Debug.Log("x:" + x + "y"+ y+"z"+z);
-
             AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
-
-            //Debug.Log("The type of block is " + ab.GetType()); 
 
             // Always changes
             // TODO: MAKE THIS PROBABILITY PART OF THE "GENOME" 
@@ -236,22 +247,44 @@ namespace Antymology.AgentScripts
             {
                 antHealth.standingOnAcidicBlock = true;
             }
-            else { antHealth.standingOnAcidicBlock = false; }
+            else
+            {
+                antHealth.standingOnAcidicBlock = false;
+                transform.position = new Vector3(x, y + 1, z);
+            }
+        }
 
+        private void checkIfOnAcidicBlock()
+        {
+            int[] pos = getCurrentWorldXYZAnt();
 
+            int x = pos[0];
+            int y = pos[1];
+            int z = pos[2];
+
+            getPossibleDirections(x, y, z);
+
+            AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
+
+            if (!ab.GetType().Equals(typeof(Antymology.Terrain.AcidicBlock)))
+            {
+                antHealth.standingOnAcidicBlock = false;
+            }
+            else
+            {
+                antHealth.standingOnAcidicBlock = true;
+            }
+            
         }
 
 
         private void consumeMulch(int xMulchBlock, int yMulchBlock, int zMulchBlock)
         {
-
             antHealth.eatMulchGainHealth();
-            
-            
-            Debug.Log("ON A MULCH");
 
             // Replace mulch block with airblock
             WorldManager.Instance.SetBlock(xMulchBlock, yMulchBlock, zMulchBlock, new AirBlock());
+            //moveAntDownOne();
 
         }
 
@@ -261,16 +294,9 @@ namespace Antymology.AgentScripts
             if (!currentBlock.GetType().Equals(typeof(Antymology.Terrain.ContainerBlock)))
             {
                 WorldManager.Instance.SetBlock(xBlockToDig, yBlockToDig, zBlockToDig, new AirBlock());
+                //moveAntDownOne();
             }
         }
-
-        private void checkNeighbours()
-        {
-            int[] neighbourYCoords = new int[9];
-
-        
-        }
-
 
         #endregion
 

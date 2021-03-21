@@ -76,7 +76,7 @@ namespace Antymology.AgentScripts
         {
             if (canEat)
             {
-                health += 5;
+                health += 10;
             }
         }
 

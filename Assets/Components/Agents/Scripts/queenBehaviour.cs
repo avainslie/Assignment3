@@ -25,6 +25,7 @@ namespace Antymology.AgentScripts
 
         private void Update()
         {
+
             int r = CustomMath.fastfloor(RNG.NextDouble() * 100);
             if (r > (1 - nestProbability))
             {
@@ -34,17 +35,23 @@ namespace Antymology.AgentScripts
 
         private void produceNestBlock()
         {
-            int[] pos = getCurrentWorldXYZAnt();
-           
-            int x = pos[0];
-            int y = pos[1];
-            int z = pos[2];
+            if (_waitTimer >= _timeToWaitInbetween + 1)
+            {
+                int[] pos = getCurrentWorldXYZAnt();
 
-            WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
+                int x = pos[0];
+                int y = pos[1];
+                int z = pos[2];
 
-            NestUI.Instance.addNestBlockToCount(); 
+                WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
+                moveAntUpOne();
 
-            antHealth.costQueenHealth();
+                NestUI.Instance.addNestBlockToCount();
+
+                antHealth.costQueenHealth();
+                _waitTimer = 0f;
+            }
+            else { _waitTimer += 1 * Time.deltaTime; }
         }
     }
 }
