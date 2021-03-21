@@ -80,6 +80,14 @@ namespace Antymology.AgentScripts
             }
         }
 
+        public void shareHealthToAntWithLess(string otherTag, AntHealth otherAntHealth)
+        {
+            if (otherAntHealth.health < health)
+            {
+                otherAntHealth.health += shareHealth(otherAntHealth.health, otherTag);
+            }
+        }
+
         public float shareHealth(float otherAntHealth, string otherTag)
         {
             health -= 5;

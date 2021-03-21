@@ -17,10 +17,10 @@ namespace Antymology.AgentScripts
         private void Awake()
         {
             RNG = new System.Random();
-
+            antHealth = GetComponent<AntHealth>();
         }
 
-        private void Update()
+        private void LateUpdate()
         {
 
             int r = CustomMath.fastfloor(RNG.NextDouble());
@@ -44,7 +44,7 @@ namespace Antymology.AgentScripts
                 moveAntUpOne();
 
                 NestUI.Instance.addNestBlockToCount();
-
+                
                 antHealth.costQueenHealth();
                 _waitTimer = 0f;
             }

@@ -18,6 +18,7 @@ namespace Antymology.AgentScripts
         public AntHealth antHealth;
 
         private AntHealth otherAntHealth;
+        //private antManager otherAntManager;
 
         private float digProbability = 0.25f;
         private float moveProbability = 0.90f;
@@ -32,10 +33,7 @@ namespace Antymology.AgentScripts
 
             antHealth = GetComponent<AntHealth>();
 
-            // Will get updated very quickly if it should be true
             checkIfOnAcidicBlock();
-           
-            otherAntHealth = GetComponent<AntHealth>();
 
         }
 
@@ -303,25 +301,22 @@ namespace Antymology.AgentScripts
             if (other.CompareTag("ant") || other.CompareTag("queen"))
             {
                 antHealth.canEat = false;
+
                 Debug.Log("AN ANT COLLIDED");
 
+                otherAntHealth = other.GetComponent<AntHealth>();
+
                 // Ants may give some of their health to other ants occupying the same space (must be a zero-sum exchange)
-                shareHealthToAntWithLess(other.tag);
+                antHealth.shareHealthToAntWithLess(other.tag, otherAntHealth);
             }
         }
 
-        private void shareHealthToAntWithLess(string otherTag)
-        {
-            if (otherAntHealth.health < antHealth.health)
-            {
-                otherAntHealth.health += antHealth.shareHealth(otherAntHealth.health, otherTag);
-            }
-        }
 
         private void OnTriggerExit()
         {
             antHealth.canEat = true;
         }
+
 
         #endregion
     }
