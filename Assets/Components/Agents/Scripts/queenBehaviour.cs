@@ -14,16 +14,19 @@ namespace Antymology.AgentScripts
 
         private System.Random RNG;
 
+        private float nestProbability = 0.25f;
+
         private void Awake()
         {
             RNG = new System.Random();
+            antHealth = GetComponent<AntHealth>();
 
         }
 
         private void Update()
         {
             int r = CustomMath.fastfloor(RNG.NextDouble() * 100);
-            if (r > 80f)
+            if (r > (1 - nestProbability))
             {
                 produceNestBlock();
             }

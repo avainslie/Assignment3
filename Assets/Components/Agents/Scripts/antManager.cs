@@ -15,9 +15,6 @@ namespace Antymology.AgentScripts
      */
     public class antManager : MonoBehaviour
     {
-
-        private Rigidbody rigidbody;
-
         private System.Random RNG;
 
         private AntHealth antHealth;
@@ -26,7 +23,8 @@ namespace Antymology.AgentScripts
 
 
 
-        private float digProbability;
+        private float digProbability = 0.25f;
+        private float moveProbability = 0.25f;
 
         [SerializeField] float _timeToWaitInbetween;
         private float _waitTimer;
@@ -45,19 +43,11 @@ namespace Antymology.AgentScripts
 
         }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-            rigidbody = GetComponent<Rigidbody>();
-            
-        }
-
-
         void Update()
         {
-
-            //checkWhatBlockAntIsOn();
-            moveAnt();
+            float m = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble() * 100;
+            if (m > (1 - moveProbability))
+                moveAnt();
 
         }
 
@@ -77,24 +67,6 @@ namespace Antymology.AgentScripts
 
             if (_waitTimer >= _timeToWaitInbetween)
             {
-                // TEMPORARY CODE TO MOVE ANTS AROUND AND BUILD OTHER METHODS
-                double r = RNG.NextDouble() * 100;
-
-                //if (r >= 60)
-                //{
-                //    transform.Translate(Vector3.forward, Space.World);
-                //}
-                //else if (r < 60 && r >= 5)
-                //{
-                //    //transform.Rotate(0, 90, 0);
-                //    transform.Translate(Vector3.forward, Space.World);
-                //}
-                //else
-                //{
-                //    //transform.Rotate(0, 180, 0);
-                //    transform.Translate(Vector3.forward, Space.World);
-                //}
-
                 int[] pos = getCurrentWorldXYZAnt();
 
                 int x = pos[0];
@@ -140,6 +112,7 @@ namespace Antymology.AgentScripts
         // Some code learned from office hours w/Cooper
         // When moving from one black to another, ants are not allowed to move to a
         // block that is greater than 2 units in height difference
+        // Could have also used 2D arrays instead of jagged
         private int[][] getPossibleDirections(int xCoord, int yCoord, int zCoord)
         {
             int[] neighbourYCoords = new int[8];
@@ -246,10 +219,10 @@ namespace Antymology.AgentScripts
 
             // Always changes
             // TODO: MAKE THIS PROBABILITY PART OF THE "GENOME" 
-            digProbability = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble() * 100;
+            float p = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble() * 100;
 
             // 20% probability to dig the block
-            if (digProbability > 80f)
+            if (p > (1 - digProbability))
             {
                 digBlock(ab, x, y, z);
                 antHealth.standingOnAcidicBlock = false;
