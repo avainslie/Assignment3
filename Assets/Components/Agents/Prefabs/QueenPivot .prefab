@@ -602,7 +602,7 @@ GameObject:
   - component: {fileID: 7798631844824791110}
   m_Layer: 0
   m_Name: 'QueenPivot '
-  m_TagString: ant
+  m_TagString: queen
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -650,6 +650,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _timeToWaitInbetween: 5
+  _waitTimer: 0
 --- !u!65 &1675815464356223979
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -661,7 +662,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 3.8, y: 3, z: 3}
+  m_Size: {x: 6, y: 3, z: 4}
   m_Center: {x: 1.25, y: 0, z: 0}
 --- !u!54 &3780753034522300246
 Rigidbody:
@@ -692,8 +693,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _timeToWaitInbetween: 5
-  countNestBlocks: {fileID: 5883684699328236996, guid: e21c60364fa1d4a56ad8c89fd2c5237f,
-    type: 3}
+  _waitTimer: 0
 --- !u!1 &7654562407789535066
 GameObject:
   m_ObjectHideFlags: 0

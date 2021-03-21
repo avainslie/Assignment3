@@ -101,18 +101,15 @@ namespace Antymology.Terrain
             // Copied from code below
             if
             (
-                WorldXCoordinate < 0 ||
-                WorldYCoordinate < 0 ||
-                WorldZCoordinate < 0 ||
+                WorldXCoordinate <= 0 ||
+                WorldYCoordinate <= 0 ||
+                WorldZCoordinate <= 0 ||
                 WorldXCoordinate > Blocks.GetLength(0) ||
                 WorldYCoordinate > Blocks.GetLength(1) ||
                 WorldZCoordinate > Blocks.GetLength(2) ||
-                // Lines below should theoretically prevent ant from instantiating on world edge container block???
-                WorldXCoordinate == 0 ||
+                // Lines below (and <= above) should theoretically prevent ant from instantiating on world edge container block???
                 WorldXCoordinate >= Blocks.GetLength(0) - 1 ||
-                WorldZCoordinate == 0 ||
-                WorldZCoordinate >= Blocks.GetLength(2) - 1 ||
-                WorldYCoordinate == 0
+                WorldZCoordinate >= Blocks.GetLength(2) - 1
             )
                 GenerateRandomWorldCoordinates();
             
@@ -154,12 +151,12 @@ namespace Antymology.Terrain
             {
                 int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
 
-                // Subtract a little from the y to accommodate for the weird ant prefab
-                Instantiate(antPrefab, new Vector3(coordinatesForAntInstantiation[0], coordinatesForAntInstantiation[1] - 0.18f, coordinatesForAntInstantiation[2]), Quaternion.identity);
+                // Subtract a little from the x and y to accommodate for the weird ant prefab
+                Instantiate(antPrefab, new Vector3(coordinatesForAntInstantiation[0] - 0.25f, coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]), Quaternion.identity);
             }
 
             int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();
-            Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0], coordinatesForQueenAntInstantiation[1], coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
+            Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0] - 0.25f, coordinatesForQueenAntInstantiation[1] - 0.23f, coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
 
         }
 

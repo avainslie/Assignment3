@@ -10,23 +10,20 @@ namespace Antymology.AgentScripts
 {
     public class queenBehaviour : antManager
     {
-        private AntHealth antHealth;
-
         private System.Random RNG;
 
-        private float nestProbability = 0.25f;
+        private float nestProbability = 0.90f;
 
         private void Awake()
         {
             RNG = new System.Random();
-            antHealth = GetComponent<AntHealth>();
 
         }
 
         private void Update()
         {
 
-            int r = CustomMath.fastfloor(RNG.NextDouble() * 100);
+            int r = CustomMath.fastfloor(RNG.NextDouble());
             if (r > (1 - nestProbability))
             {
                 produceNestBlock();
@@ -35,7 +32,7 @@ namespace Antymology.AgentScripts
 
         private void produceNestBlock()
         {
-            if (_waitTimer >= _timeToWaitInbetween + 1)
+            if (_waitTimer >= _timeToWaitInbetween + 5)
             {
                 int[] pos = getCurrentWorldXYZAnt();
 

@@ -7,8 +7,6 @@ using System.Linq;
 
 namespace Antymology.AgentScripts
 {
-    // TODO: RESTRICT ONLY ONE ANT ON A BLOCK AT A TIME
-
     /* 
      * Manages ants actions
      * References at bottom of file
@@ -17,14 +15,12 @@ namespace Antymology.AgentScripts
     {
         private System.Random RNG;
 
-        private AntHealth antHealth;
+        public AntHealth antHealth;
 
         private AntHealth otherAntHealth;
 
-
-
         private float digProbability = 0.25f;
-        private float moveProbability = 0.25f;
+        private float moveProbability = 0.90f;
 
         public float _timeToWaitInbetween;
         public float _waitTimer;
@@ -45,7 +41,7 @@ namespace Antymology.AgentScripts
 
         void Update()
         {
-            float m = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble() * 100;
+            float m = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble();
             if (m > (1 - moveProbability))
                 moveAnt();
 
@@ -230,7 +226,7 @@ namespace Antymology.AgentScripts
 
             // Always changes
             // TODO: MAKE THIS PROBABILITY PART OF THE "GENOME" 
-            float p = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble() * 100;
+            float p = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble();
 
             // 20% probability to dig the block
             if (p > (1 - digProbability))
@@ -304,20 +300,25 @@ namespace Antymology.AgentScripts
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("SOMETHING COLLIDED");
-            // Ants may give some of their health to other ants occupying the same space (must be a zero-sum exchange)
-            if (other.CompareTag("ant"))
+            if (other.CompareTag("ant") || other.CompareTag("queen"))
             {
-                Debug.Log("AN ANT COLLIDED");
                 antHealth.canEat = false;
+                Debug.Log("AN ANT COLLIDED");
 
-                // Need reference to antBehaviour script on other ant, pass as argument
-                otherAntHealth.health += antHealth.shareHealth(otherAntHealth.health);
-
+                // Ants may give some of their health to other ants occupying the same space (must be a zero-sum exchange)
+                shareHealthToAntWithLess(other.tag);
             }
         }
 
-        private void OnTriggerExit(Collider other)
+        private void shareHealthToAntWithLess(string otherTag)
+        {
+            if (otherAntHealth.health < antHealth.health)
+            {
+                otherAntHealth.health += antHealth.shareHealth(otherAntHealth.health, otherTag);
+            }
+        }
+
+        private void OnTriggerExit()
         {
             antHealth.canEat = true;
         }

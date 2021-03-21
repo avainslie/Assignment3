@@ -80,12 +80,15 @@ namespace Antymology.AgentScripts
             }
         }
 
-        public float shareHealth(float otherAntHealth)
+        public float shareHealth(float otherAntHealth, string otherTag)
         {
             health -= 5;
-            
+            if (otherTag.Equals("queen"))
+            {
+                health -= 10;
+                return 15;
+            }
             return 5;
-
         }
 
         public void costQueenHealth()
