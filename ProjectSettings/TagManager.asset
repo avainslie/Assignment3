@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ant
   - queen
+  - worldManager
   layers:
   - Default
   - TransparentFX

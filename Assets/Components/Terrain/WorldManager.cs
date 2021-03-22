@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Antymology.Terrain
 {
@@ -75,10 +76,7 @@ namespace Antymology.Terrain
                 ConfigurationManager.Instance.World_Diameter];
         }
 
-        /// <summary>
-        /// Called after every awake has been called.
-        /// </summary>
-        private void Start()
+        private void CreateWorld()
         {
             GenerateData();
             GenerateChunks();
@@ -87,6 +85,36 @@ namespace Antymology.Terrain
             Camera.main.transform.LookAt(new Vector3(Blocks.GetLength(0), 0, Blocks.GetLength(2)));
 
             GenerateAnts();
+        }
+
+        private void ClearWorld()
+        {
+            GameObject[] GameObjects = (FindObjectsOfType<GameObject>() as GameObject[]);
+
+            for (int i = 0; i < GameObjects.Length; i++)
+            {
+                // Tagged things like directional light with "worldManager" to keep it simple
+                if (!GameObjects[i].CompareTag("worldManager") && !GameObjects[i].CompareTag("MainCamera"))
+                Destroy(GameObjects[i]);
+            }
+        }
+
+        private void Start()
+        {
+            CreateWorld();
+        }
+
+        private void Update()
+        {
+            if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
+            {
+                ClearWorld();
+                CreateWorld();
+                GenerationUI.Instance.addGenerationToCount();
+
+                ConfigurationManager.Instance.waitTimer = 0f;
+            }
+            else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
         }
 
         private int[] GenerateRandomWorldCoordinates()

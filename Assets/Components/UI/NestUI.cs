@@ -21,7 +21,7 @@ public class NestUI : Singleton<NestUI>
     // Update is called once per frame
     void Update()
     {
-        nestBlockCounter.text = nestBlockCount.ToString();
+        nestBlockCounter.text = "Nest block count: " + nestBlockCount.ToString();
     }
 
 
