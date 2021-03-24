@@ -127,7 +127,7 @@ namespace Antymology.Terrain
 
 
                 InitializeNeuralNet();
-
+                // TODO: MAKE A WAY TO COMPARE NETS TO EACHOTHER TO PICK THE BEST ONE
                 
             }
             else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
@@ -137,6 +137,7 @@ namespace Antymology.Terrain
         {
             NeuralNet net = new NeuralNet(layers);
             net.mutateWeightsInMatrix();
+            net.setFitness(0f);
             nets.Add(net);
 
         }
