@@ -63,5 +63,5 @@ public class ConfigurationManager : Singleton<ConfigurationManager>
     /// <summary>
     /// The number of seconds to wait between generations
     /// </summary>
-    public float timeToWaitInbetween = 60f;
+    public float timeToWaitInbetween = 10f;
 }

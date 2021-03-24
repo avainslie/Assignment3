@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Antymology.AgentScripts;
+using Antymology.UI;
 
 namespace Antymology.Terrain
 {
@@ -47,6 +49,14 @@ namespace Antymology.Terrain
         /// Random number generator.
         /// </summary>
         private SimplexNoise SimplexNoise;
+
+        /// <summary>
+        /// 1 input and 1 output.
+        /// </summary>
+        private int[] layers = new int[] { 1, 10, 10, 1 };
+
+
+        private List<NeuralNet> nets;
 
         #endregion
 
@@ -102,6 +112,7 @@ namespace Antymology.Terrain
         private void Start()
         {
             CreateWorld();
+            nets = new List<NeuralNet>();
         }
 
         private void Update()
@@ -109,13 +120,30 @@ namespace Antymology.Terrain
             if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
             {
                 ClearWorld();
+                ConfigurationManager.Instance.waitTimer = 0f;
                 CreateWorld();
+
                 GenerationUI.Instance.addGenerationToCount();
 
-                ConfigurationManager.Instance.waitTimer = 0f;
+
+                InitializeNeuralNet();
+
+                
             }
             else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
         }
+
+        void InitializeNeuralNet()
+        {
+            NeuralNet net = new NeuralNet(layers);
+            net.mutateWeightsInMatrix();
+            nets.Add(net);
+
+        }
+
+         
+
+
 
         private int[] GenerateRandomWorldCoordinates()
         {

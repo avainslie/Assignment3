@@ -141,7 +141,7 @@ namespace Antymology.AgentScripts
         }
 
 
-        private void mutateWeightsInMatrix()
+        public void mutateWeightsInMatrix()
         {
             // Go through all layers
             for (int i = 0; i < weights.Length; i++)
