@@ -58,6 +58,12 @@ namespace Antymology.Terrain
 
         private List<NeuralNet> nets;
 
+        private bool isTraining = false;
+
+        private int populationSize;
+
+        private List<antManager> antList = null;
+
         #endregion
 
         #region Initialization
@@ -67,6 +73,8 @@ namespace Antymology.Terrain
         /// </summary>
         void Awake()
         {
+            populationSize = ConfigurationManager.Instance.numAntsToSpawn;
+
             // Generate new random number generator
             RNG = new System.Random(ConfigurationManager.Instance.Seed);
 
@@ -86,65 +94,75 @@ namespace Antymology.Terrain
                 ConfigurationManager.Instance.World_Diameter];
         }
 
-        private void CreateWorld()
+        void Timer()
+        {
+            isTraining = false;
+        }
+
+        private void Start()
         {
             GenerateData();
             GenerateChunks();
 
             Camera.main.transform.position = new Vector3(0 / 2, Blocks.GetLength(1), 0);
             Camera.main.transform.LookAt(new Vector3(Blocks.GetLength(0), 0, Blocks.GetLength(2)));
-
-            GenerateAnts();
-        }
-
-        private void ClearWorld()
-        {
-            GameObject[] GameObjects = (FindObjectsOfType<GameObject>() as GameObject[]);
-
-            for (int i = 0; i < GameObjects.Length; i++)
-            {
-                // Tagged things like directional light with "worldManager" to keep it simple
-                if (!GameObjects[i].CompareTag("worldManager") && !GameObjects[i].CompareTag("MainCamera"))
-                Destroy(GameObjects[i]);
-            }
-        }
-
-        private void Start()
-        {
-            CreateWorld();
-            nets = new List<NeuralNet>();
         }
 
         private void Update()
         {
-            if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
+            if (isTraining == false)
             {
-                ClearWorld();
-                ConfigurationManager.Instance.waitTimer = 0f;
-                CreateWorld();
+                if (GenerationUI.Instance.generationCount == 1)
+                {
+                    InitializeAntNeuralNets();
+                }
+                else
+                {
+                    nets.Sort();
+                    for (int i = 0; i < populationSize / 2; i++)
+                    {
+                        nets[i] = new NeuralNet(nets[i + (populationSize / 2)]);
+                        nets[i].mutateWeightsInMatrix();
+
+                        // Make deep copy
+                        nets[i + (populationSize / 2)] = new NeuralNet(nets[i + (populationSize / 2)]); 
+                    }
+
+                    for (int i = 0; i < populationSize; i++)
+                    {
+                        nets[i].setFitness(0f);
+                    }
+                }
+
 
                 GenerationUI.Instance.addGenerationToCount();
 
-
-                InitializeNeuralNet();
-                // TODO: MAKE A WAY TO COMPARE NETS TO EACHOTHER TO PICK THE BEST ONE
-                
+                isTraining = true;
+                // Schedule the call to the function after 15s delay
+                // Will train for 15 seconds
+                Invoke("Timer", 60f);
+                Debug.Log("CREATING NEW ANTS");
+                GenerateAnts();
             }
-            else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
         }
 
-        void InitializeNeuralNet()
-        {
-            NeuralNet net = new NeuralNet(layers);
-            net.mutateWeightsInMatrix();
-            net.setFitness(0f);
-            nets.Add(net);
 
+
+        void InitializeAntNeuralNets()
+        {
+
+            nets = new List<NeuralNet>();
+
+
+            for (int i = 0; i < populationSize; i++)
+            {
+                NeuralNet net = new NeuralNet(layers);
+                net.mutateWeightsInMatrix();
+                nets.Add(net);
+            }
         }
 
          
-
-
 
         private int[] GenerateRandomWorldCoordinates()
         {
@@ -204,12 +222,29 @@ namespace Antymology.Terrain
         /// </summary>
         private void GenerateAnts()
         {
-            for (int i = 0; i < ConfigurationManager.Instance.numAntsToSpawn; i ++)
+            if (antList != null)
+            {
+                for (int i = 0; i < antList.Count; i++)
+                {
+                    GameObject.Destroy(antList[i].gameObject);
+                }
+
+            }
+
+            antList = new List<antManager>();
+
+            for (int i = 0; i < populationSize; i ++)
             {
                 int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
 
                 // Subtract a little from the x and y to accommodate for the weird ant prefab
-                Instantiate(antPrefab, new Vector3(coordinatesForAntInstantiation[0] - 0.25f, coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]), Quaternion.identity);
+                antManager ant = ((GameObject) Instantiate(antPrefab, new
+                    Vector3(coordinatesForAntInstantiation[0] - 0.25f,
+                    coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]),
+                    Quaternion.identity)).GetComponent<antManager>();
+
+                ant.Init(nets[i]);
+                antList.Add(ant);
             }
 
             int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();

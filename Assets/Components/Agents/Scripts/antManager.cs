@@ -26,6 +26,10 @@ namespace Antymology.AgentScripts
         public float _timeToWaitInbetween;
         public float _waitTimer;
 
+        private bool initialized = false;
+        private NeuralNet net;
+
+
         private void Awake()
         {
             // Generate new random number generator
@@ -39,10 +43,33 @@ namespace Antymology.AgentScripts
 
         void Update()
         {
-            float m = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble();
-            if (m > (1 - moveProbability))
-                moveAnt();
+            if (initialized == true)
+            {
+                float[] inputs = new float[1];
+                float m = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble();
+                inputs[0] = m;
 
+                if (m > (1 - moveProbability))
+                    moveAnt();
+
+                float[] output = net.feedForward(inputs);
+
+                m = output[0];
+
+                if (m > (1 - moveProbability))
+                    moveAnt();
+
+                net.addFitness((1f - Mathf.Abs(inputs[0])));
+
+            }
+            
+
+        }
+
+        public void Init(NeuralNet net)
+        {
+            this.net = net;
+            initialized = true;
         }
 
         public int[] getCurrentWorldXYZAnt()

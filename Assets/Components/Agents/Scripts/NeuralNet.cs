@@ -71,7 +71,7 @@ namespace Antymology.AgentScripts
             List<float[]> neuronsList = new List<float[]>();
 
             // for each layer in layers, add layer to neuron list
-            for (int i = 0; i < neurons.Length; i++)
+            for (int i = 0; i < layers.Length; i++)
                 neuronsList.Add(new float[layers[i]]);
             neurons = neuronsList.ToArray();
         }
@@ -94,8 +94,8 @@ namespace Antymology.AgentScripts
                     float[] neuronWeights = new float[neuronsInPreviousLayer];
 
                     // For each of those connections, give them a random weight
-                    // between 0 and 0.5
-                    for (int k = 0; i < neuronsInPreviousLayer; k++)
+                    // between -0.5 and 0.5
+                    for (int k = 0; k < neuronsInPreviousLayer; k++)
                         neuronWeights[k] = UnityEngine.Random.Range(-0.5f,0.5f);
 
                     layerWeightsList.Add(neuronWeights);
@@ -108,7 +108,7 @@ namespace Antymology.AgentScripts
         #endregion
 
         
-        private float[] feedForward(float[] inputs)
+        public float[] feedForward(float[] inputs)
         {
             // Put inputs into input layer in neuron matrix
             for (int i = 0; i < inputs.Length; i++)

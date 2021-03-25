@@ -8,7 +8,7 @@ public class GenerationUI : Singleton<GenerationUI>
 
     public Text generationCounter;
 
-    private int generationCount;
+    public int generationCount;
 
 
     void Start()
