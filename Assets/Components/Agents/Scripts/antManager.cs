@@ -36,12 +36,14 @@ namespace Antymology.AgentScripts
             RNG = new System.Random(ConfigurationManager.Instance.Seed);
 
             antHealth = GetComponent<AntHealth>();
-
-            checkIfOnAcidicBlock();
-
         }
 
-        void Update()
+        private void Start()
+        {
+            //checkWhatBlockAntIsOn();
+        }
+
+        private void Update()
         {
             if (initialized == true)
             {
@@ -59,11 +61,11 @@ namespace Antymology.AgentScripts
                 if (m > (1 - moveProbability))
                     moveAnt();
 
+                // This should be how many nest blocks are produced or maybe queen health
+                // Maximize queen health -> more nest blocks
                 net.addFitness((1f - Mathf.Abs(inputs[0])));
 
             }
-            
-
         }
 
         public void Init(NeuralNet net)
@@ -95,7 +97,7 @@ namespace Antymology.AgentScripts
                 int z = pos[2];
 
                 // Get possible directions to move in based on current position
-                int[][] possibleDirections = getPossibleDirections(x, y, z);
+                int[][] possibleDirections = DirectionFinder.getPossibleDirections(x, y, z);
 
                 // Use the direction variable to select an array from the possibleDirections jagged array to move to
                 int direction = 0;
@@ -115,6 +117,7 @@ namespace Antymology.AgentScripts
                     z = possibleDirections[direction][2];
 
                     // TODO: ADD IN ROTATION/DIRECTION OF ANTS MOVEMENT
+                    //transform.Rotate(new Vector3(x, y, z));
 
                     // Select a random direction to go to out of possible options
                     transform.position = new Vector3(x, y, z);
@@ -147,90 +150,7 @@ namespace Antymology.AgentScripts
             transform.position = new Vector3(x, y - 1, z);
         }
 
-        // Some code learned from office hours w/Cooper
-        // When moving from one black to another, ants are not allowed to move to a
-        // block that is greater than 2 units in height difference
-        // Could have also used 2D arrays instead of jagged
-        private int[][] getPossibleDirections(int xCoord, int yCoord, int zCoord)
-        {
-            int[] neighbourYCoords = new int[8];
-
-            int[][] neighbourXZCoords = new int[][]
-            {
-                new int[] { xCoord - 1, zCoord + 1 },
-                new int[] { xCoord, zCoord + 1 },
-                new int[] { xCoord + 1, zCoord+1 },
-                new int[] { xCoord - 1, zCoord },
-                new int[] { xCoord + 1, zCoord },
-                new int[] { xCoord - 1, zCoord - 1 },
-                new int[] { xCoord, zCoord - 1 },
-                new int[] { xCoord + 1, zCoord - 1 }
-            };
-
-            // Max 8 directions, 3 int in each direction
-            // When initializing an array in c#, all values will be 0. So we will need to remove those later.
-            int[][] possibleDirections = new int[8][];
-
-            for (int i = 0; i < 8; i++)
-            {
-                possibleDirections[i] = new int[3];
-            }
-
-
-            // Find y coordinate of each neighbour
-            for (int i = 0; i < 8; i++)
-            {
-                neighbourYCoords[i] = WorldManager.Instance.getHeightAt(neighbourXZCoords[i][0], neighbourXZCoords[i][1]);
-            }
-
-            // Check all the neighbour y coordinates
-            for (int i = 0; i < neighbourYCoords.Length; i++)
-            {
-                // If the difference between the neighbouring block and current block is less than 2 units
-                // save the coordinates as a possible direction to move in
-                if (Mathf.Abs(neighbourYCoords[i] - yCoord) < 2)
-                {
-                    // x coord of the neighbour
-                    possibleDirections[i][0] = neighbourXZCoords[i][0];
-                    // y coord of the neighbour
-                    possibleDirections[i][1] = neighbourYCoords[i];
-                    // z coord of the neighbour
-                    possibleDirections[i][2] = neighbourXZCoords[i][1];
-                }
-            }
-
-            // Now we have a jagged array of all the possible moves ant can make.
-            // If array not full of moves, than the "empty" spots are occupied by zeros
-
-            // Default where to "slice" the jagged array
-            int whereToSlice = 8;
-
-            // Set whereToSlice to the first all zero sub array in jagged array
-            for (int i = 0; i < possibleDirections.Length; i++)
-            {
-                if (possibleDirections[i].Sum() == 0)
-                {
-                    whereToSlice = i;
-                    break;
-                }
-            }
-
-            // Deal with case where there is nowhere to move
-            if (whereToSlice == 0)
-            {
-                return null;
-            }
-            // whereToSlice can = 1 through 8
-            else {
-                int[][] possibleDirectionsNoZeros = new int[whereToSlice][];
-                
-                for (int i = 0; i < possibleDirectionsNoZeros.Length; i++)
-                {
-                    possibleDirectionsNoZeros[i] = possibleDirections[i];
-                }
-                return possibleDirectionsNoZeros;
-            }
-        }
+        
 
         #endregion
 
@@ -245,7 +165,7 @@ namespace Antymology.AgentScripts
             int y = pos[1];
             int z = pos[2];
 
-            getPossibleDirections(x, y, z);
+            DirectionFinder.getPossibleDirections(x, y, z);
 
             AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
 
@@ -267,35 +187,13 @@ namespace Antymology.AgentScripts
             else if (ab.GetType().Equals(typeof(Antymology.Terrain.AcidicBlock)))
             {
                 antHealth.standingOnAcidicBlock = true;
+                
             }
             else
             {
                 antHealth.standingOnAcidicBlock = false;
-                transform.position = new Vector3(x, y + 1, z);
+                //transform.position = new Vector3(x, y + 1, z);
             }
-        }
-
-        private void checkIfOnAcidicBlock()
-        {
-            int[] pos = getCurrentWorldXYZAnt();
-
-            int x = pos[0];
-            int y = pos[1];
-            int z = pos[2];
-
-            getPossibleDirections(x, y, z);
-
-            AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
-
-            if (!ab.GetType().Equals(typeof(Antymology.Terrain.AcidicBlock)))
-            {
-                antHealth.standingOnAcidicBlock = false;
-            }
-            else
-            {
-                antHealth.standingOnAcidicBlock = true;
-            }
-            
         }
 
 

@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 using Antymology.AgentScripts;
 using Antymology.UI;
 
+// Neural net reference: https://youtu.be/Yq0SfuiOVYE
+// Code modified from his project which is available for download from video descp
+
 namespace Antymology.Terrain
 {
     public class WorldManager : Singleton<WorldManager>
@@ -118,16 +121,22 @@ namespace Antymology.Terrain
                 }
                 else
                 {
+                    // Uses the CompareTo in NeuralNet to sort
                     nets.Sort();
+
+                    // Keep best nets, and make rest of population into mutated versions of them
                     for (int i = 0; i < populationSize / 2; i++)
                     {
+                        // Make worst nets into mutated versions of best nets
                         nets[i] = new NeuralNet(nets[i + (populationSize / 2)]);
                         nets[i].mutateWeightsInMatrix();
 
-                        // Make deep copy
-                        nets[i + (populationSize / 2)] = new NeuralNet(nets[i + (populationSize / 2)]); 
+                        // Make deep copy of the good nets to reset neurons
+                        nets[i + (populationSize / 2)] = new NeuralNet(nets[i +
+                            (populationSize / 2)]); 
                     }
 
+                    // Reset fitness
                     for (int i = 0; i < populationSize; i++)
                     {
                         nets[i].setFitness(0f);
@@ -138,9 +147,11 @@ namespace Antymology.Terrain
                 GenerationUI.Instance.addGenerationToCount();
 
                 isTraining = true;
+
                 // Schedule the call to the function after 15s delay
                 // Will train for 15 seconds
                 Invoke("Timer", 60f);
+
                 Debug.Log("CREATING NEW ANTS");
                 GenerateAnts();
             }
@@ -162,7 +173,21 @@ namespace Antymology.Terrain
             }
         }
 
-         
+        public bool checkIfCoordinatesAreNotInWorld(int WorldXCoordinate, int WorldYCoordinate, int WorldZCoordinate)
+        {
+            if (WorldXCoordinate <= 0 ||
+                WorldYCoordinate <= 0 ||
+                WorldZCoordinate <= 0 ||
+                WorldXCoordinate > Blocks.GetLength(0) ||
+                WorldYCoordinate > Blocks.GetLength(1) ||
+                WorldZCoordinate > Blocks.GetLength(2) ||
+                // Lines below (and <= above) should theoretically prevent ant from instantiating on world edge container block???
+                WorldXCoordinate >= Blocks.GetLength(0) - 1 ||
+                WorldZCoordinate >= Blocks.GetLength(2) - 1)
+                return true;
+            return false;
+
+        }
 
         private int[] GenerateRandomWorldCoordinates()
         {
@@ -174,18 +199,7 @@ namespace Antymology.Terrain
             int WorldYCoordinate = getHeightAt(WorldXCoordinate, WorldZCoordinate) + 1;
 
             // Copied from code below
-            if
-            (
-                WorldXCoordinate <= 0 ||
-                WorldYCoordinate <= 0 ||
-                WorldZCoordinate <= 0 ||
-                WorldXCoordinate > Blocks.GetLength(0) ||
-                WorldYCoordinate > Blocks.GetLength(1) ||
-                WorldZCoordinate > Blocks.GetLength(2) ||
-                // Lines below (and <= above) should theoretically prevent ant from instantiating on world edge container block???
-                WorldXCoordinate >= Blocks.GetLength(0) - 1 ||
-                WorldZCoordinate >= Blocks.GetLength(2) - 1
-            )
+            if (checkIfCoordinatesAreNotInWorld(WorldXCoordinate, WorldYCoordinate, WorldZCoordinate))
                 GenerateRandomWorldCoordinates();
             
             coordinatesForAntInstantiation[0] = WorldXCoordinate;
@@ -216,8 +230,7 @@ namespace Antymology.Terrain
         }
 
      
-        /// <summary>[
-        /// TO BE IMPLEMENTED BY YOU
+        /// <summary>
         /// Edited from office hours w/Cooper
         /// </summary>
         private void GenerateAnts()

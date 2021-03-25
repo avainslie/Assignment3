@@ -649,7 +649,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: facc9202d4f704577b55550b5065f075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _timeToWaitInbetween: 5
+  antHealth: {fileID: 0}
+  _timeToWaitInbetween: 2
   _waitTimer: 0
 --- !u!65 &1675815464356223979
 BoxCollider:
@@ -692,7 +693,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c172d4e42ce5145199022b83a4ab9ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _timeToWaitInbetween: 5
+  antHealth: {fileID: 0}
+  _timeToWaitInbetween: 2
   _waitTimer: 0
 --- !u!1 &7654562407789535066
 GameObject:

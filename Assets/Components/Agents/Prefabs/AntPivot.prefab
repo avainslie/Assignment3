@@ -725,7 +725,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: facc9202d4f704577b55550b5065f075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _timeToWaitInbetween: 5
+  antHealth: {fileID: 0}
+  _timeToWaitInbetween: 2
   _waitTimer: 0
 --- !u!65 &4558915907890519960
 BoxCollider:
