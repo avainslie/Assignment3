@@ -29,6 +29,7 @@ namespace Antymology.AgentScripts
         private bool initialized = false;
         private NeuralNet net;
 
+        [SerializeField] string currentBlock;
 
         private void Awake()
         {
@@ -36,6 +37,8 @@ namespace Antymology.AgentScripts
             RNG = new System.Random(ConfigurationManager.Instance.Seed);
 
             antHealth = GetComponent<AntHealth>();
+
+            currentBlock = "airblock";
         }
 
         private void Start()
@@ -168,6 +171,8 @@ namespace Antymology.AgentScripts
             DirectionFinder.getPossibleDirections(x, y, z);
 
             AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
+
+            currentBlock = ab.ToString();
 
             // Always changes
             // TODO: MAKE THIS PROBABILITY PART OF THE "GENOME" 

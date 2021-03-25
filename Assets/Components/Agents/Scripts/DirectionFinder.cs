@@ -45,7 +45,7 @@ namespace Antymology.AgentScripts
             for (int i = 0; i < 8; i++)
             {
                 neighbourYCoords[i] = WorldManager.Instance.getHeightAt(
-                    neighbourXZCoords[i][0], neighbourXZCoords[i][1]);
+                    neighbourXZCoords[i][0], neighbourXZCoords[i][1]) + 1;
             }
 
             // Check all the neighbour y coordinates
@@ -67,9 +67,6 @@ namespace Antymology.AgentScripts
                     possibleDirections[i][2] = neighbourXZCoords[i][1];
                 }
             }
-
-            
-                
 
             // Now we have a jagged array of all the possible moves ant can make.
             // If array not full of moves, than the "empty" spots are occupied by zeros
