@@ -36,7 +36,7 @@ namespace Antymology.Terrain
         /// The raw data of the underlying world structure.
         /// WHAT WE WILL BE MANIPULATNG MOSTLY BY USING GET AND SET BLOCK
         /// </summary>
-        private AbstractBlock[,,] Blocks;
+        public AbstractBlock[,,] Blocks;
 
         /// <summary>
         /// Reference to the geometry data of the chunks.
@@ -115,7 +115,7 @@ namespace Antymology.Terrain
         {
             if (isTraining == false)
             {
-                if (GenerationUI.Instance.generationCount == 1)
+                if (GenerationUI.Instance.generationCount == 0)
                 {
                     InitializeAntNeuralNets();
                 }
@@ -196,12 +196,12 @@ namespace Antymology.Terrain
             int WorldXCoordinate = RNG.Next(0, Blocks.GetLength(0));
             int WorldZCoordinate = RNG.Next(0, Blocks.GetLength(2));
 
-            int WorldYCoordinate = getHeightAt(WorldXCoordinate, WorldZCoordinate) + 1;
+            int WorldYCoordinate = getHeightAt(WorldXCoordinate, WorldZCoordinate);
 
             // Copied from code below
             if (checkIfCoordinatesAreNotInWorld(WorldXCoordinate, WorldYCoordinate, WorldZCoordinate))
-                GenerateRandomWorldCoordinates();
-            
+                return GenerateRandomWorldCoordinates();
+
             coordinatesForAntInstantiation[0] = WorldXCoordinate;
             coordinatesForAntInstantiation[1] = WorldYCoordinate;
             coordinatesForAntInstantiation[2] = WorldZCoordinate;
@@ -214,16 +214,23 @@ namespace Antymology.Terrain
         {
             int retVal = -1;
 
-            // Blocks.GetLength(1) - 1 is the height of the world
-            for (int j = Blocks.GetLength(1) - 1; j >= 0; j--)
+            try
             {
-                // If conversion is not possible, "as" returns null 
-                if ((Blocks[WorldXCoordinate, j, WorldZCoordinate] as AirBlock) == null)
+                // Blocks.GetLength(1) - 1 is the height of the world
+                for (int j = Blocks.GetLength(1) - 1; j >= 0; j--)
                 {
-                    // Return the y coordinate of the first non air block we hit
-                    retVal = j;
-                    break;
+                    // If conversion is not possible, "as" returns null 
+                    if ((Blocks[WorldXCoordinate, j, WorldZCoordinate] as AirBlock) == null)
+                    {
+                        // Return the y coordinate of the first non air block we hit
+                        retVal = j + 1;
+                        break;
+                    }
                 }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
             }
 
             return retVal;
@@ -281,7 +288,7 @@ namespace Antymology.Terrain
                 WorldZCoordinate < 0 ||
                 WorldXCoordinate >= Blocks.GetLength(0) ||
                 WorldYCoordinate >= Blocks.GetLength(1) ||
-                WorldZCoordinate >= Blocks.GetLength(2)
+                WorldZCoordinate >= Blocks.GetLength(2) 
             )
                 return new AirBlock();
 
@@ -332,9 +339,9 @@ namespace Antymology.Terrain
                 WorldXCoordinate < 0 ||
                 WorldYCoordinate < 0 ||
                 WorldZCoordinate < 0 ||
-                WorldXCoordinate > Blocks.GetLength(0) ||
-                WorldYCoordinate > Blocks.GetLength(1) ||
-                WorldZCoordinate > Blocks.GetLength(2)
+                WorldXCoordinate > Blocks.GetLength(0) - 1 ||
+                WorldYCoordinate > Blocks.GetLength(1) - 1 ||
+                WorldZCoordinate > Blocks.GetLength(2) - 1
             )
             {
                 Debug.Log("Attempted to set a block which didn't exist");
@@ -364,15 +371,15 @@ namespace Antymology.Terrain
                 LocalXCoordinate < 0 ||
                 LocalYCoordinate < 0 ||
                 LocalZCoordinate < 0 ||
-                LocalXCoordinate > Blocks.GetLength(0) ||
-                LocalYCoordinate > Blocks.GetLength(1) ||
-                LocalZCoordinate > Blocks.GetLength(2) ||
+                LocalXCoordinate > Blocks.GetLength(0) - 1 ||
+                LocalYCoordinate > Blocks.GetLength(1) - 1 ||
+                LocalZCoordinate > Blocks.GetLength(2) - 1 ||
                 ChunkXCoordinate < 0 ||
                 ChunkYCoordinate < 0 ||
                 ChunkZCoordinate < 0 ||
-                ChunkXCoordinate > Blocks.GetLength(0) ||
-                ChunkYCoordinate > Blocks.GetLength(1) ||
-                ChunkZCoordinate > Blocks.GetLength(2)
+                ChunkXCoordinate > Blocks.GetLength(0) - 1 ||
+                ChunkYCoordinate > Blocks.GetLength(1) - 1 ||
+                ChunkZCoordinate > Blocks.GetLength(2) - 1 
             )
             {
                 Debug.Log("Attempted to set a block which didn't exist");
@@ -561,17 +568,17 @@ namespace Antymology.Terrain
             // Also flag all 6 neighbours for update as well
             if(updateX - 1 >= 0)
                 Chunks[updateX - 1, updateY, updateZ].updateNeeded = true;
-            if (updateX + 1 < Chunks.GetLength(0))
+            if (updateX + 1 < Chunks.GetLength(0)  )
                 Chunks[updateX + 1, updateY, updateZ].updateNeeded = true;
 
             if (updateY - 1 >= 0)
                 Chunks[updateX, updateY - 1, updateZ].updateNeeded = true;
-            if (updateY + 1 < Chunks.GetLength(1))
+            if (updateY + 1 < Chunks.GetLength(1) )
                 Chunks[updateX, updateY + 1, updateZ].updateNeeded = true;
 
             if (updateZ - 1 >= 0)
                 Chunks[updateX, updateY, updateZ - 1].updateNeeded = true;
-            if (updateX + 1 < Chunks.GetLength(2))
+            if (updateZ + 1 < Chunks.GetLength(2) )
                 Chunks[updateX, updateY, updateZ + 1].updateNeeded = true;
         }
 

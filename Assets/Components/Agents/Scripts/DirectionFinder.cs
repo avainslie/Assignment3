@@ -45,7 +45,7 @@ namespace Antymology.AgentScripts
             for (int i = 0; i < 8; i++)
             {
                 neighbourYCoords[i] = WorldManager.Instance.getHeightAt(
-                    neighbourXZCoords[i][0], neighbourXZCoords[i][1]) + 1;
+                    neighbourXZCoords[i][0], neighbourXZCoords[i][1]);
             }
 
             // Check all the neighbour y coordinates

@@ -181,15 +181,15 @@ namespace Antymology.AgentScripts
             // 20% probability to dig the block
             if (p > (1 - digProbability))
             {
-                digBlock(ab, x, y, z);
+                digBlock(ab, x, y - 1, z);
                 antHealth.standingOnAcidicBlock = false;
             }
-            else if (ab.GetType().Equals(typeof(Antymology.Terrain.MulchBlock)))
+            else if ((WorldManager.Instance.Blocks[x, y - 1, z] as MulchBlock) != null)
             {
                 antHealth.standingOnAcidicBlock = false;
-                consumeMulch(x, y, z);
+                consumeMulch(x, y - 1, z);
             }
-            else if (ab.GetType().Equals(typeof(Antymology.Terrain.AcidicBlock)))
+            else if ((WorldManager.Instance.Blocks[x, y -1 , z] as AcidicBlock) != null)
             {
                 antHealth.standingOnAcidicBlock = true;
                 
@@ -215,7 +215,7 @@ namespace Antymology.AgentScripts
         // Remove block from world by digging it
         private void digBlock(AbstractBlock currentBlock, int xBlockToDig, int yBlockToDig, int zBlockToDig)
         {
-            if (!currentBlock.GetType().Equals(typeof(Antymology.Terrain.ContainerBlock)))
+            if ((currentBlock as ContainerBlock) == null)
             {
                 WorldManager.Instance.SetBlock(xBlockToDig, yBlockToDig, zBlockToDig, new AirBlock());
                 //moveAntDownOne();
@@ -231,8 +231,6 @@ namespace Antymology.AgentScripts
             if (other.CompareTag("ant") || other.CompareTag("queen"))
             {
                 antHealth.canEat = false;
-
-                Debug.Log("AN ANT COLLIDED");
 
                 otherAntHealth = other.GetComponent<AntHealth>();
 
