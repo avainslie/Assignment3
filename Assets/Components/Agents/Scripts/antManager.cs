@@ -19,6 +19,17 @@ namespace Antymology.AgentScripts
 
         private AntHealth otherAntHealth;
 
+        public NeuralNet antNet;
+
+        // INPUTS
+        public float distToQueen;
+        public float xCoord;
+        public float yCoord;
+        public float zCoord;
+        public float currentHealth;
+        public float queensHealth;
+
+        // OUTPUTS
         private float moveF;
         private float moveB;
         private float moveR;
@@ -30,68 +41,71 @@ namespace Antymology.AgentScripts
 
         [SerializeField] string currentBlock;
 
+        public float antTimeToWaitInbetween = 10f;
+        public float antWaitTimer = 0f;
+
         private void Awake()
         {
             // Generate new random number generator
             RNG = new System.Random(ConfigurationManager.Instance.Seed);
 
             antHealth = GetComponent<AntHealth>();
-
-        }
-
-        private void Start()
-        {
-            //checkWhatBlockAntIsOn();
         }
 
         private void Update()
         {
-            int[] pos = getCurrentWorldXYZAnt();
 
-            int x = pos[0];
-            int y = pos[1];
-            int z = pos[2];
-
-            DirectionFinder.getPossibleDirections(x, y, z);
-
-            AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
-
-            currentBlock = ab.ToString();
-
-            // Get output from the current neural net
-            string decision = NeuralNetController.Instance.decision;
-
-            switch (decision)
+            if (antWaitTimer >= antTimeToWaitInbetween)
             {
-                case "moveF":
-                    Debug.Log("MOVEF");
-                    break;
+                int[] pos = getCurrentWorldXYZAnt();
 
-                case "moveB":
-                    Debug.Log("MOVEB");
-                    break;
+                int x = pos[0];
+                int y = pos[1];
+                int z = pos[2];
 
-                case "moveR":
-                    Debug.Log("MOVER");
-                    break;
+                DirectionFinder.getPossibleDirections(x, y, z);
 
-                case "moveL":
-                    Debug.Log("MOVEL");
-                    break;
+                AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
 
-                case "nothing":
-                    Debug.Log("NOTHING");
-                    break;
+                currentBlock = ab.ToString();
 
-                case "dig":
-                    Debug.Log("DIG");
-                    digBlock(ab, x, y - 1 ,z);
-                    break;
+                // Get output from the current neural net
+                string decision = NeuralNetController.Instance.getNewOutput();
 
-                case "eat":
-                    Debug.Log("EAT");
-                    break;
+                switch (decision)
+                {
+                    case "moveF":
+                        Debug.Log("MOVEF");
+                        break;
+
+                    case "moveB":
+                        Debug.Log("MOVEB");
+                        break;
+
+                    case "moveR":
+                        Debug.Log("MOVER");
+                        break;
+
+                    case "moveL":
+                        Debug.Log("MOVEL");
+                        break;
+
+                    case "nothing":
+                        Debug.Log("NOTHING");
+                        break;
+
+                    case "dig":
+                        Debug.Log("DIG");
+                        digBlock(ab, x, y - 1 ,z);
+                        break;
+
+                    case "eat":
+                        Debug.Log("EAT");
+                        break;
+                }
+                    antWaitTimer = 0f;
             }
+            else { antWaitTimer += 1 * Time.deltaTime; }
 
         }
 

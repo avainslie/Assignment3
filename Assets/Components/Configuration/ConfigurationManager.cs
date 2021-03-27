@@ -56,6 +56,6 @@ public class ConfigurationManager : Singleton<ConfigurationManager>
     public int numAntsToSpawn = 10;
 
 
-    public float timeToWaitInbetween = 60f;
+    public float timeToWaitInbetween = 10f;
     public float waitTimer = 0f;
 }

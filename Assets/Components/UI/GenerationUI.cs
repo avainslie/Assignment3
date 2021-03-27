@@ -13,7 +13,7 @@ public class GenerationUI : Singleton<GenerationUI>
 
     void Start()
     {
-        generationCount = 0;
+        generationCount = 1;
         generationCounter = GetComponent<Text>();
     }
 

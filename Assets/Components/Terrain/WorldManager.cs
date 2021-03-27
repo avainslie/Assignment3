@@ -53,21 +53,8 @@ namespace Antymology.Terrain
         /// </summary>
         private SimplexNoise SimplexNoise;
 
-        /// <summary>
-        /// 1 input and 1 output.
-        /// </summary>
-        private int[] layers = new int[] { 1, 10, 10, 1 };
-
-
-        private List<NeuralNet> nets;
-
-        private bool isTraining = false;
-
         private int populationSize;
 
-        private List<antManager> antList = null;
-
-      
 
         #endregion
 
@@ -99,34 +86,6 @@ namespace Antymology.Terrain
                 ConfigurationManager.Instance.World_Diameter];
         }
 
-        void Timer()
-        {
-            isTraining = false;
-        }
-
-        private void CreateWorld()
-        {
-            GenerateData();
-            GenerateChunks();
-
-            Camera.main.transform.position = new Vector3(0 / 2, Blocks.GetLength(1), 0);
-            Camera.main.transform.LookAt(new Vector3(Blocks.GetLength(0), 0, Blocks.GetLength(2)));
-
-            GenerateAnts();
-        }
-
-        private void ClearWorld()
-        {
-            GameObject[] GameObjects = (FindObjectsOfType<GameObject>() as GameObject[]);
-
-            for (int i = 0; i < GameObjects.Length; i++)
-            {
-                // Tagged things like directional light with "worldManager" to keep it simple
-                if (!GameObjects[i].CompareTag("worldManager") && !GameObjects[i].CompareTag("MainCamera"))
-                    Destroy(GameObjects[i]);
-            }
-        }
-
         private void Start()
         {
             CreateWorld();
@@ -149,35 +108,7 @@ namespace Antymology.Terrain
 
 
 
-        void InitializeAntNeuralNets()
-        {
-
-            nets = new List<NeuralNet>();
-
-
-            for (int i = 0; i < populationSize; i++)
-            {
-                NeuralNet net = new NeuralNet(layers);
-                net.mutateWeightsInMatrix();
-                nets.Add(net);
-            }
-        }
-
-        public bool checkIfCoordinatesAreNotInWorld(int WorldXCoordinate, int WorldYCoordinate, int WorldZCoordinate)
-        {
-            if (WorldXCoordinate <= 0 ||
-                WorldYCoordinate <= 0 ||
-                WorldZCoordinate <= 0 ||
-                WorldXCoordinate > Blocks.GetLength(0) ||
-                WorldYCoordinate > Blocks.GetLength(1) ||
-                WorldZCoordinate > Blocks.GetLength(2) ||
-                // Lines below (and <= above) should theoretically prevent ant from instantiating on world edge container block???
-                WorldXCoordinate >= Blocks.GetLength(0) - 1 ||
-                WorldZCoordinate >= Blocks.GetLength(2) - 1)
-                return true;
-            return false;
-
-        }
+        
 
         private int[] GenerateRandomWorldCoordinates()
         {
@@ -197,6 +128,85 @@ namespace Antymology.Terrain
             coordinatesForAntInstantiation[2] = WorldZCoordinate;
 
             return coordinatesForAntInstantiation;
+        }
+
+        
+
+     
+        /// <summary>
+        /// Edited from office hours w/Cooper
+        /// </summary>
+        private void GenerateAnts()
+        {
+            NeuralNet n = NeuralNetController.Instance.net;
+
+            for (int i = 0; i < populationSize; i ++)
+            {
+                int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
+
+                // Subtract a little from the x and y to accommodate for the weird ant prefab
+                antManager ant = (Instantiate(antPrefab, new
+                    Vector3(coordinatesForAntInstantiation[0] - 0.25f,
+                    coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]),
+                    Quaternion.identity)).GetComponent<antManager>();
+
+                ant.antNet = new NeuralNet(n);
+                
+            }
+
+            //int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();
+            //Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0] - 0.25f, coordinatesForQueenAntInstantiation[1] - 0.23f, coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
+            float queenYForInstan = getHeightAt(1, 1);
+            GameObject queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan - 0.23f, 1f), Quaternion.identity);
+
+            queen.transform.Rotate(new Vector3(0, 90, 0));
+            //queen.transform.position += new Vector3(1f, queenYForInstan - 0.23f, 1f + 0.25f);
+            
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private void CreateWorld()
+        {
+            GenerateData();
+            GenerateChunks();
+
+            Camera.main.transform.position = new Vector3(0 / 2, Blocks.GetLength(1), 0);
+            Camera.main.transform.LookAt(new Vector3(Blocks.GetLength(0), 0, Blocks.GetLength(2)));
+
+            GenerateAnts();
+        }
+
+        private void ClearWorld()
+        {
+            NestUI.Instance.resetNestUI();
+            GameObject[] GameObjects = FindObjectsOfType<GameObject>();
+
+            for (int i = 0; i < GameObjects.Length; i++)
+            {
+                // Tagged things like directional light with "worldManager" to keep it simple
+                if (!GameObjects[i].CompareTag("worldManager") && !GameObjects[i].CompareTag("MainCamera"))
+                    Destroy(GameObjects[i]);
+            }
+        }
+        
+
+        public bool checkIfCoordinatesAreNotInWorld(int WorldXCoordinate, int WorldYCoordinate, int WorldZCoordinate)
+        {
+            if (WorldXCoordinate <= 0 ||
+                WorldYCoordinate <= 0 ||
+                WorldZCoordinate <= 0 ||
+                WorldXCoordinate > Blocks.GetLength(0) ||
+                WorldYCoordinate > Blocks.GetLength(1) ||
+                WorldZCoordinate > Blocks.GetLength(2) ||
+                // Lines below (and <= above) should theoretically prevent ant from instantiating on world edge container block???
+                WorldXCoordinate >= Blocks.GetLength(0) - 1 ||
+                WorldZCoordinate >= Blocks.GetLength(2) - 1)
+                return true;
+            return false;
+
         }
 
         // From office hours w/Cooper
@@ -225,177 +235,6 @@ namespace Antymology.Terrain
 
             return retVal;
         }
-
-     
-        /// <summary>
-        /// Edited from office hours w/Cooper
-        /// </summary>
-        private void GenerateAnts()
-        {
-            if (antList != null)
-            {
-                for (int i = 0; i < antList.Count; i++)
-                {
-                    GameObject.Destroy(antList[i].gameObject);
-                }
-
-            }
-
-            antList = new List<antManager>();
-
-            for (int i = 0; i < populationSize; i ++)
-            {
-                int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
-
-                // Subtract a little from the x and y to accommodate for the weird ant prefab
-                antManager ant = ((GameObject) Instantiate(antPrefab, new
-                    Vector3(coordinatesForAntInstantiation[0] - 0.25f,
-                    coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]),
-                    Quaternion.identity)).GetComponent<antManager>();
-
-            }
-
-            //int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();
-            //Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0] - 0.25f, coordinatesForQueenAntInstantiation[1] - 0.23f, coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
-            float queenYForInstan = (float) getHeightAt(1, 1);
-            GameObject queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan - 0.23f, 1f), Quaternion.identity);
-
-            queen.transform.Rotate(new Vector3(0, 90, 0));
-            //queen.transform.position += new Vector3(1f, queenYForInstan - 0.23f, 1f + 0.25f);
-            
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Retrieves an abstract block type at the desired world coordinates.
-        /// </summary>
-        public AbstractBlock GetBlock(int WorldXCoordinate, int WorldYCoordinate, int WorldZCoordinate)
-        {
-            if
-            (
-                WorldXCoordinate < 0 ||
-                WorldYCoordinate < 0 ||
-                WorldZCoordinate < 0 ||
-                WorldXCoordinate >= Blocks.GetLength(0) ||
-                WorldYCoordinate >= Blocks.GetLength(1) ||
-                WorldZCoordinate >= Blocks.GetLength(2) 
-            )
-                return new AirBlock();
-
-            return Blocks[WorldXCoordinate, WorldYCoordinate, WorldZCoordinate];
-        }
-
-       
-
-        /// <summary>
-        /// Retrieves an abstract block type at the desired local coordinates within a chunk.
-        /// </summary>
-        public AbstractBlock GetBlock(
-            int ChunkXCoordinate, int ChunkYCoordinate, int ChunkZCoordinate,
-            int LocalXCoordinate, int LocalYCoordinate, int LocalZCoordinate)
-        {
-            if
-            (
-                LocalXCoordinate < 0 ||
-                LocalYCoordinate < 0 ||
-                LocalZCoordinate < 0 ||
-                LocalXCoordinate >= Blocks.GetLength(0) ||
-                LocalYCoordinate >= Blocks.GetLength(1) ||
-                LocalZCoordinate >= Blocks.GetLength(2) ||
-                ChunkXCoordinate < 0 ||
-                ChunkYCoordinate < 0 ||
-                ChunkZCoordinate < 0 ||
-                ChunkXCoordinate >= Blocks.GetLength(0) ||
-                ChunkYCoordinate >= Blocks.GetLength(1) ||
-                ChunkZCoordinate >= Blocks.GetLength(2) 
-            )
-                return new AirBlock();
-
-            return Blocks
-            [
-                ChunkXCoordinate * LocalXCoordinate,
-                ChunkYCoordinate * LocalYCoordinate,
-                ChunkZCoordinate * LocalZCoordinate
-            ];
-        }
-
-        /// <summary>
-        /// sets an abstract block type at the desired world coordinates.
-        /// </summary>
-        public void SetBlock(int WorldXCoordinate, int WorldYCoordinate, int WorldZCoordinate, AbstractBlock toSet)
-        {
-            if
-            (
-                WorldXCoordinate < 0 ||
-                WorldYCoordinate < 0 ||
-                WorldZCoordinate < 0 ||
-                WorldXCoordinate > Blocks.GetLength(0) - 1 ||
-                WorldYCoordinate > Blocks.GetLength(1) - 1 ||
-                WorldZCoordinate > Blocks.GetLength(2) - 1
-            )
-            {
-                Debug.Log("Attempted to set a block which didn't exist");
-                return;
-            }
-
-            Blocks[WorldXCoordinate, WorldYCoordinate, WorldZCoordinate] = toSet;
-
-            SetChunkContainingBlockToUpdate
-            (
-                WorldXCoordinate,
-                WorldYCoordinate,
-                WorldZCoordinate
-            );
-        }
-
-        /// <summary>
-        /// sets an abstract block type at the desired local coordinates within a chunk.
-        /// </summary>
-        public void SetBlock(
-            int ChunkXCoordinate, int ChunkYCoordinate, int ChunkZCoordinate,
-            int LocalXCoordinate, int LocalYCoordinate, int LocalZCoordinate,
-            AbstractBlock toSet)
-        {
-            if
-            (
-                LocalXCoordinate < 0 ||
-                LocalYCoordinate < 0 ||
-                LocalZCoordinate < 0 ||
-                LocalXCoordinate > Blocks.GetLength(0) - 1 ||
-                LocalYCoordinate > Blocks.GetLength(1) - 1 ||
-                LocalZCoordinate > Blocks.GetLength(2) - 1 ||
-                ChunkXCoordinate < 0 ||
-                ChunkYCoordinate < 0 ||
-                ChunkZCoordinate < 0 ||
-                ChunkXCoordinate > Blocks.GetLength(0) - 1 ||
-                ChunkYCoordinate > Blocks.GetLength(1) - 1 ||
-                ChunkZCoordinate > Blocks.GetLength(2) - 1 
-            )
-            {
-                Debug.Log("Attempted to set a block which didn't exist");
-                return;
-            }
-            Blocks
-            [
-                ChunkXCoordinate * LocalXCoordinate,
-                ChunkYCoordinate * LocalYCoordinate,
-                ChunkZCoordinate * LocalZCoordinate
-            ] = toSet;
-
-            SetChunkContainingBlockToUpdate
-            (
-                ChunkXCoordinate * LocalXCoordinate,
-                ChunkYCoordinate * LocalYCoordinate,
-                ChunkZCoordinate * LocalZCoordinate
-            );
-        }
-
-        #endregion
-
-        #region Helpers
 
         #region Blocks
 
@@ -609,6 +448,134 @@ namespace Antymology.Terrain
         }
 
         #endregion
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Retrieves an abstract block type at the desired world coordinates.
+        /// </summary>
+        public AbstractBlock GetBlock(int WorldXCoordinate, int WorldYCoordinate, int WorldZCoordinate)
+        {
+            if
+            (
+                WorldXCoordinate < 0 ||
+                WorldYCoordinate < 0 ||
+                WorldZCoordinate < 0 ||
+                WorldXCoordinate >= Blocks.GetLength(0) ||
+                WorldYCoordinate >= Blocks.GetLength(1) ||
+                WorldZCoordinate >= Blocks.GetLength(2)
+            )
+                return new AirBlock();
+
+            return Blocks[WorldXCoordinate, WorldYCoordinate, WorldZCoordinate];
+        }
+
+
+
+        /// <summary>
+        /// Retrieves an abstract block type at the desired local coordinates within a chunk.
+        /// </summary>
+        public AbstractBlock GetBlock(
+            int ChunkXCoordinate, int ChunkYCoordinate, int ChunkZCoordinate,
+            int LocalXCoordinate, int LocalYCoordinate, int LocalZCoordinate)
+        {
+            if
+            (
+                LocalXCoordinate < 0 ||
+                LocalYCoordinate < 0 ||
+                LocalZCoordinate < 0 ||
+                LocalXCoordinate >= Blocks.GetLength(0) ||
+                LocalYCoordinate >= Blocks.GetLength(1) ||
+                LocalZCoordinate >= Blocks.GetLength(2) ||
+                ChunkXCoordinate < 0 ||
+                ChunkYCoordinate < 0 ||
+                ChunkZCoordinate < 0 ||
+                ChunkXCoordinate >= Blocks.GetLength(0) ||
+                ChunkYCoordinate >= Blocks.GetLength(1) ||
+                ChunkZCoordinate >= Blocks.GetLength(2)
+            )
+                return new AirBlock();
+
+            return Blocks
+            [
+                ChunkXCoordinate * LocalXCoordinate,
+                ChunkYCoordinate * LocalYCoordinate,
+                ChunkZCoordinate * LocalZCoordinate
+            ];
+        }
+
+        /// <summary>
+        /// sets an abstract block type at the desired world coordinates.
+        /// </summary>
+        public void SetBlock(int WorldXCoordinate, int WorldYCoordinate, int WorldZCoordinate, AbstractBlock toSet)
+        {
+            if
+            (
+                WorldXCoordinate < 0 ||
+                WorldYCoordinate < 0 ||
+                WorldZCoordinate < 0 ||
+                WorldXCoordinate > Blocks.GetLength(0) - 1 ||
+                WorldYCoordinate > Blocks.GetLength(1) - 1 ||
+                WorldZCoordinate > Blocks.GetLength(2) - 1
+            )
+            {
+                Debug.Log("Attempted to set a block which didn't exist");
+                return;
+            }
+
+            Blocks[WorldXCoordinate, WorldYCoordinate, WorldZCoordinate] = toSet;
+
+            SetChunkContainingBlockToUpdate
+            (
+                WorldXCoordinate,
+                WorldYCoordinate,
+                WorldZCoordinate
+            );
+        }
+
+        /// <summary>
+        /// sets an abstract block type at the desired local coordinates within a chunk.
+        /// </summary>
+        public void SetBlock(
+            int ChunkXCoordinate, int ChunkYCoordinate, int ChunkZCoordinate,
+            int LocalXCoordinate, int LocalYCoordinate, int LocalZCoordinate,
+            AbstractBlock toSet)
+        {
+            if
+            (
+                LocalXCoordinate < 0 ||
+                LocalYCoordinate < 0 ||
+                LocalZCoordinate < 0 ||
+                LocalXCoordinate > Blocks.GetLength(0) - 1 ||
+                LocalYCoordinate > Blocks.GetLength(1) - 1 ||
+                LocalZCoordinate > Blocks.GetLength(2) - 1 ||
+                ChunkXCoordinate < 0 ||
+                ChunkYCoordinate < 0 ||
+                ChunkZCoordinate < 0 ||
+                ChunkXCoordinate > Blocks.GetLength(0) - 1 ||
+                ChunkYCoordinate > Blocks.GetLength(1) - 1 ||
+                ChunkZCoordinate > Blocks.GetLength(2) - 1
+            )
+            {
+                Debug.Log("Attempted to set a block which didn't exist");
+                return;
+            }
+            Blocks
+            [
+                ChunkXCoordinate * LocalXCoordinate,
+                ChunkYCoordinate * LocalYCoordinate,
+                ChunkZCoordinate * LocalZCoordinate
+            ] = toSet;
+
+            SetChunkContainingBlockToUpdate
+            (
+                ChunkXCoordinate * LocalXCoordinate,
+                ChunkYCoordinate * LocalYCoordinate,
+                ChunkZCoordinate * LocalZCoordinate
+            );
+        }
 
         #endregion
     }

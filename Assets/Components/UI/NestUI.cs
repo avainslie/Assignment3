@@ -29,4 +29,9 @@ public class NestUI : Singleton<NestUI>
     {
         nestBlockCount++;
     }
+
+    public void resetNestUI()
+    {
+        nestBlockCount = 0;
+    }
 }
