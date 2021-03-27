@@ -8,15 +8,16 @@ using TMPro;
 
 namespace Antymology.AgentScripts
 {
-    public class queenBehaviour : antManager
+    public class queenBehaviour : MonoBehaviour
     {
         public float _timeToWaitInbetween = 10f;
         public float _waitTimer = 0f;
 
+        public AntHealth queenAntHealth;
 
         private void Awake()
         {
-            antHealth = GetComponent<AntHealth>();
+            queenAntHealth = GetComponent<AntHealth>();
         }
 
         private void LateUpdate()
@@ -26,11 +27,11 @@ namespace Antymology.AgentScripts
 
         private void checkQueenHealth()
         {
-            if (antHealth.health > antHealth.maxHealth / 3)
+            if (queenAntHealth.health > queenAntHealth.maxHealth / 3)
             {
                 produceNestBlock();
 
-                int[] queenCurrentPosition = getCurrentWorldXYZAnt();
+                int[] queenCurrentPosition = antAndQueenController.Instance.getCurrentWorldXYZAnt(gameObject);
                 int queenX = queenCurrentPosition[0];
                 int queenY = queenCurrentPosition[1];
                 int queenZ = queenCurrentPosition[2];
@@ -50,18 +51,18 @@ namespace Antymology.AgentScripts
 
         private void produceNestBlock()
         {
-            int[] pos = getCurrentWorldXYZAnt();
+            int[] pos = antAndQueenController.Instance.getCurrentWorldXYZAnt(gameObject);
 
             int x = pos[0];
             int y = pos[1];
             int z = pos[2];
 
             WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
-            moveAntUpOne();
+            antAndQueenController.Instance.moveAntUpOne(gameObject);
 
             NestUI.Instance.addNestBlockToCount();
-                
-            antHealth.costQueenHealth();
+
+            queenAntHealth.costQueenHealth();
         }
 
         private void moveQueen()

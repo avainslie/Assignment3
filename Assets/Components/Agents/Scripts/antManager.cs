@@ -7,10 +7,10 @@ using System.Linq;
 
 namespace Antymology.AgentScripts
 {
-    /* 
-     * Manages ants actions
-     * References at bottom of file
-     */
+    /// <summary>
+    /// Manages common ants actions
+    /// References at bottom of file
+    /// </summary>
     public class antManager : MonoBehaviour
     {
         private System.Random RNG;
@@ -21,7 +21,12 @@ namespace Antymology.AgentScripts
 
         public NeuralNet antNet;
 
+        private GameObject queen;
+
+        private queenBehaviour queenBehaviour;
+
         // INPUTS
+        public float[] inputs;
         public float distToQueen;
         public float xCoord;
         public float yCoord;
@@ -50,6 +55,9 @@ namespace Antymology.AgentScripts
             RNG = new System.Random(ConfigurationManager.Instance.Seed);
 
             antHealth = GetComponent<AntHealth>();
+
+            queen = GameObject.FindGameObjectWithTag("queen");
+            queenBehaviour = queen.GetComponent<queenBehaviour>();
         }
 
         private void Update()
@@ -57,50 +65,58 @@ namespace Antymology.AgentScripts
 
             if (antWaitTimer >= antTimeToWaitInbetween)
             {
-                int[] pos = getCurrentWorldXYZAnt();
+                int[] pos = antAndQueenController.Instance.getCurrentWorldXYZAnt(gameObject);
 
-                int x = pos[0];
-                int y = pos[1];
-                int z = pos[2];
+                int xCoord = pos[0];
+                int yCoord = pos[1];
+                int zCoord = pos[2];
 
-                DirectionFinder.getPossibleDirections(x, y, z);
+                DirectionFinder.getPossibleDirections(xCoord, yCoord, zCoord);
 
-                AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
+                AbstractBlock ab = WorldManager.Instance.GetBlock(xCoord, yCoord, zCoord);
 
                 currentBlock = ab.ToString();
 
+                distToQueen = calculateDistToQueen();
+
+                currentHealth = antHealth.health;
+                
+                queensHealth = queenBehaviour.queenAntHealth.health;
+
+                inputs = new float[6] { distToQueen, xCoord, yCoord, zCoord, currentHealth, queensHealth };
+
                 // Get output from the current neural net
-                string decision = NeuralNetController.Instance.getNewOutput();
+                string decision = NeuralNetController.Instance.runNeuralNet(inputs);
 
                 switch (decision)
                 {
                     case "moveF":
-                        Debug.Log("MOVEF");
+                        //Debug.Log("MOVEF");
                         break;
 
                     case "moveB":
-                        Debug.Log("MOVEB");
+                        //Debug.Log("MOVEB");
                         break;
 
                     case "moveR":
-                        Debug.Log("MOVER");
+                        //Debug.Log("MOVER");
                         break;
 
                     case "moveL":
-                        Debug.Log("MOVEL");
+                        //Debug.Log("MOVEL");
                         break;
 
                     case "nothing":
-                        Debug.Log("NOTHING");
+                        //Debug.Log("NOTHING");
                         break;
 
                     case "dig":
-                        Debug.Log("DIG");
-                        digBlock(ab, x, y - 1 ,z);
+                        //Debug.Log("DIG");
+                        digBlock(ab, xCoord, yCoord - 1 ,zCoord);
                         break;
 
                     case "eat":
-                        Debug.Log("EAT");
+                        //Debug.Log("EAT");
                         break;
                 }
                     antWaitTimer = 0f;
@@ -111,10 +127,9 @@ namespace Antymology.AgentScripts
 
         #region MOVEMENT
 
-
         public void moveAnt()
         {
-                int[] pos = getCurrentWorldXYZAnt();
+                int[] pos = antAndQueenController.Instance.getCurrentWorldXYZAnt(gameObject);
 
                 int x = pos[0];
                 int y = pos[1];
@@ -152,42 +167,15 @@ namespace Antymology.AgentScripts
             
         }
 
-        public void moveAntUpOne()
-        {
-            int[] pos = getCurrentWorldXYZAnt();
-
-            int x = pos[0];
-            int y = pos[1];
-            int z = pos[2];
-            transform.position = new Vector3(x, y + 1, z);
-        }
-
-        public void moveAntDownOne()
-        {
-            int[] pos = getCurrentWorldXYZAnt();
-
-            int x = pos[0];
-            int y = pos[1];
-            int z = pos[2];
-            transform.position = new Vector3(x, y - 1, z);
-        }
-
-        public int[] getCurrentWorldXYZAnt()
-        {
-            int[] currentXYZWorldAntCoord = AntPosition.getAntCurrentPosition(transform.position);
-
-            return currentXYZWorldAntCoord;
-        }
-
-
         #endregion
 
+        
 
         #region INTERACT WITH BLOCKS
 
         private void checkWhatBlockAntIsOn()
         {
-            int[] pos = getCurrentWorldXYZAnt();
+            int[] pos = antAndQueenController.Instance.getCurrentWorldXYZAnt(gameObject);
 
             int x = pos[0];
             int y = pos[1];
@@ -235,7 +223,14 @@ namespace Antymology.AgentScripts
             }
         }
 
+        #endregion
 
+        #region QUEEN KNOWLEDGE
+
+        private float calculateDistToQueen()
+        {
+            return 0f;
+        }
 
         #endregion
 

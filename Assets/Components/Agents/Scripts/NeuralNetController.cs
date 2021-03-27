@@ -28,9 +28,9 @@ namespace Antymology.AgentScripts
 
         private string[] possibleDecisions = { "moveF", "moveB", "moveR", "moveL", "nothing", "dig", "eat" };
 
-        private float[] outputs;
+        private float[] outputs = new float[7];
 
-
+        private float[] inputs;
 
         // INPUTS
         public float distToQueen;
@@ -47,32 +47,34 @@ namespace Antymology.AgentScripts
 
         public static readonly NeuralNetController Instance = new NeuralNetController();
 
-        private NeuralNetController()
-        {
-            Initialize();
-        }
-
+        private NeuralNetController() { }
 
         // Use this for initialization
-        void Initialize()
+        public NeuralNet InitializeFirstNeuralNet()
         {
             // TODO: HARD CODE ONLY FOR NOW, WILL CHANGE WITH ACTUAL NN
-            outputs = new float[7] { 0f, 1f, 2f, 3f, 4f, 5f, 6f };
+            //outputs = new float[7] { 0f, 1f, 2f, 3f, 4f, 5f, 6f };
 
             NeuralNet net = new NeuralNet(layers);
 
+            return net;
         }
 
         // Update is called once per frame
-        public string getNewOutput()
+        public string runNeuralNet(float[] inputs)
         {
+            outputs = net.feedForward(inputs);
+
+            for (int i = 0; i < outputs.Length; i++)
+                Debug.Log(outputs[i]);
+
             float r = Random.Range(0f, 6f);
             int rr = CustomMath.fastfloor((double)r);
 
             decision = possibleDecisions[rr];
 
             // NN will give back an output with a larger weight.
-            //float highestProbability = outputs[0];
+            float highestProbability = outputs[0];
 
             //for (int i = 0; i < outputs.Length; i++)
             //{
@@ -86,12 +88,6 @@ namespace Antymology.AgentScripts
 
             return decision;
 
-        }
-
-
-        public void InitializeAntNeuralNet()
-        {
-            NeuralNet net = new NeuralNet(layers);
         }
     }
 }

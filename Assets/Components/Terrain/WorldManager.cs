@@ -53,7 +53,15 @@ namespace Antymology.Terrain
         /// </summary>
         private SimplexNoise SimplexNoise;
 
+        /// <summary>
+        /// How many ants there are in the world.
+        /// </summary>
         private int populationSize;
+
+        /// <summary>
+        /// Neural net associated with each ant. May change each generation
+        /// </summary>
+        public NeuralNet n;
 
 
         #endregion
@@ -106,10 +114,6 @@ namespace Antymology.Terrain
 
         }
 
-
-
-        
-
         private int[] GenerateRandomWorldCoordinates()
         {
             int[] coordinatesForAntInstantiation = new int[3];
@@ -129,16 +133,24 @@ namespace Antymology.Terrain
 
             return coordinatesForAntInstantiation;
         }
-
-        
-
-     
+ 
         /// <summary>
         /// Edited from office hours w/Cooper
         /// </summary>
         private void GenerateAnts()
         {
-            NeuralNet n = NeuralNetController.Instance.net;
+            //int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();
+            //Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0] - 0.25f, coordinatesForQueenAntInstantiation[1] - 0.23f, coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
+            float queenYForInstan = getHeightAt(1, 1);
+            GameObject queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan - 0.23f, 1f), Quaternion.identity);
+
+            queen.transform.Rotate(new Vector3(0, 90, 0));
+            //queen.transform.position += new Vector3(1f, queenYForInstan - 0.23f, 1f + 0.25f);
+
+            if (GenerationUI.Instance.generationCount == 1)
+                n = NeuralNetController.Instance.InitializeFirstNeuralNet();
+            else
+                n = NeuralNetController.Instance.net;
 
             for (int i = 0; i < populationSize; i ++)
             {
@@ -153,15 +165,6 @@ namespace Antymology.Terrain
                 ant.antNet = new NeuralNet(n);
                 
             }
-
-            //int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();
-            //Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0] - 0.25f, coordinatesForQueenAntInstantiation[1] - 0.23f, coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
-            float queenYForInstan = getHeightAt(1, 1);
-            GameObject queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan - 0.23f, 1f), Quaternion.identity);
-
-            queen.transform.Rotate(new Vector3(0, 90, 0));
-            //queen.transform.position += new Vector3(1f, queenYForInstan - 0.23f, 1f + 0.25f);
-            
         }
 
         #endregion
