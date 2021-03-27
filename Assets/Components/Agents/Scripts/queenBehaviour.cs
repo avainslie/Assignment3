@@ -10,50 +10,47 @@ namespace Antymology.AgentScripts
 {
     public class queenBehaviour : antManager
     {
-        private System.Random RNG;
-
-        private float nestProbability = 0.90f;
-
         public float _timeToWaitInbetween = 10f;
         public float _waitTimer = 0f;
 
 
         private void Awake()
         {
-            RNG = new System.Random();
             antHealth = GetComponent<AntHealth>();
         }
 
         private void LateUpdate()
         {
+            checkQueenHealth();
+        }
 
-            int r = CustomMath.fastfloor(RNG.NextDouble());
-            if (r > (1 - nestProbability))
-            {
+        private void checkQueenHealth()
+        {
+            if (antHealth.health > antHealth.maxHealth / 3)
                 produceNestBlock();
-            }
         }
 
         private void produceNestBlock()
         {
-            if (_waitTimer >= _timeToWaitInbetween + 5)
-            {
-                int[] pos = getCurrentWorldXYZAnt();
+            int[] pos = getCurrentWorldXYZAnt();
 
-                int x = pos[0];
-                int y = pos[1];
-                int z = pos[2];
+            int x = pos[0];
+            int y = pos[1];
+            int z = pos[2];
 
-                WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
-                moveAntUpOne();
+            WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
+            moveAntUpOne();
 
-                NestUI.Instance.addNestBlockToCount();
+            NestUI.Instance.addNestBlockToCount();
                 
-                antHealth.costQueenHealth();
-                _waitTimer = 0f;
-            }
-            else { _waitTimer += 1 * Time.deltaTime; }
+            antHealth.costQueenHealth();
         }
+
+        private void moveQueen()
+        {
+            // MOVE QUEEN IN A SMART WAY TO MAXIMIZE NEST BLOCK PRODUCTION 
+        }
+
     }
 }
 

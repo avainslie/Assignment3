@@ -11,7 +11,7 @@ namespace Antymology.AgentScripts
 
         public bool standingOnAcidicBlock;
 
-        private float maxHealth;
+        public float maxHealth;
 
         public bool canEat;
 
