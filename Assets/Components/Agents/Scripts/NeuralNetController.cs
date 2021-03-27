@@ -33,7 +33,7 @@ namespace Antymology.AgentScripts
         public float currentHealth;
         public float queensHealth;
 
-        private bool initialized = false;
+        private bool initialized = false; 
         private NeuralNet net;
 
         // Use this for initialization

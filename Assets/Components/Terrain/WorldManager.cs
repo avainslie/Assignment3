@@ -218,7 +218,7 @@ namespace Antymology.Terrain
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
             }
@@ -255,9 +255,14 @@ namespace Antymology.Terrain
 
             }
 
-            int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();
-            Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0] - 0.25f, coordinatesForQueenAntInstantiation[1] - 0.23f, coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
+            //int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();
+            //Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0] - 0.25f, coordinatesForQueenAntInstantiation[1] - 0.23f, coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
+            float queenYForInstan = (float) getHeightAt(1, 1);
+            GameObject queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan - 0.23f, 1f), Quaternion.identity);
 
+            queen.transform.Rotate(new Vector3(0, 90, 0));
+            //queen.transform.position += new Vector3(1f, queenYForInstan - 0.23f, 1f + 0.25f);
+            
         }
 
         #endregion

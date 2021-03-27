@@ -27,7 +27,25 @@ namespace Antymology.AgentScripts
         private void checkQueenHealth()
         {
             if (antHealth.health > antHealth.maxHealth / 3)
+            {
                 produceNestBlock();
+
+                int[] queenCurrentPosition = getCurrentWorldXYZAnt();
+                int queenX = queenCurrentPosition[0];
+                int queenY = queenCurrentPosition[1];
+                int queenZ = queenCurrentPosition[2];
+
+                int yInfrontOfQueen = WorldManager.Instance.getHeightAt(queenX, queenZ);
+
+                // If nothing greater or smaller in height diff of 2 infront of her
+                // Then move forward
+                if (Mathf.Abs(queenY - yInfrontOfQueen) < 2)
+                {
+                    moveQueenforward();
+                }
+            }
+                
+            
         }
 
         private void produceNestBlock()
@@ -48,7 +66,40 @@ namespace Antymology.AgentScripts
 
         private void moveQueen()
         {
-            // MOVE QUEEN IN A SMART WAY TO MAXIMIZE NEST BLOCK PRODUCTION 
+            // MOVE QUEEN IN A SMART WAY TO MAXIMIZE NEST BLOCK PRODUCTION
+
+            // ASSUMING NO OBSTACLES (aka no block greater than 2 height diff)
+
+            // Go forward until hit wall
+            // Turn right
+            // Turn right
+            // Go forward until hit wall
+            // Turn left
+            // Turn left
+            // Repeat
+            // If wall on right
+            // Move up one
+            // Repeat
+        }
+
+        private void moveQueenforward()
+        {
+           
+        }
+
+        private void turnQueenRight()
+        {
+
+        }
+
+        private void turnQueenLeft()
+        {
+
+        }
+
+        private void moveQueenUpOne()
+        {
+
         }
 
     }

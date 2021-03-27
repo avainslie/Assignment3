@@ -107,7 +107,8 @@ namespace Antymology.AgentScripts
 
         #endregion
 
-        
+
+        #region ACTIONS
         public float[] feedForward(float[] inputs)
         {
             // Put inputs into input layer in neuron matrix
@@ -199,7 +200,9 @@ namespace Antymology.AgentScripts
             else if (fitness < otherNeuralNet.fitness) return -1;
             
             else return 0;
-        } 
+        }
+
+        #endregion
 
     }
 }
