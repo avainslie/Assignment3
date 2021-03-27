@@ -25,7 +25,13 @@ namespace Antymology.AgentScripts
         public float _timeToWaitInbetween = 10f;
         public float _waitTimer = 0f;
 
-
+        // INPUTS
+        public float distToQueen;
+        public float xCoord;
+        public float yCoord;
+        public float zCoord;
+        public float currentHealth;
+        public float queensHealth;
 
         private bool initialized = false;
         private NeuralNet net;
@@ -43,8 +49,8 @@ namespace Antymology.AgentScripts
         {
             if (_waitTimer >= _timeToWaitInbetween)
             {
-
                 
+
 
                 float r = Random.Range(0f, 6f);
                 int rr = CustomMath.fastfloor((double)r);

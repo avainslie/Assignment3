@@ -67,6 +67,8 @@ namespace Antymology.Terrain
 
         private List<antManager> antList = null;
 
+      
+
         #endregion
 
         #region Initialization
@@ -102,59 +104,47 @@ namespace Antymology.Terrain
             isTraining = false;
         }
 
-        private void Start()
+        private void CreateWorld()
         {
             GenerateData();
             GenerateChunks();
 
             Camera.main.transform.position = new Vector3(0 / 2, Blocks.GetLength(1), 0);
             Camera.main.transform.LookAt(new Vector3(Blocks.GetLength(0), 0, Blocks.GetLength(2)));
+
+            GenerateAnts();
+        }
+
+        private void ClearWorld()
+        {
+            GameObject[] GameObjects = (FindObjectsOfType<GameObject>() as GameObject[]);
+
+            for (int i = 0; i < GameObjects.Length; i++)
+            {
+                // Tagged things like directional light with "worldManager" to keep it simple
+                if (!GameObjects[i].CompareTag("worldManager") && !GameObjects[i].CompareTag("MainCamera"))
+                    Destroy(GameObjects[i]);
+            }
+        }
+
+        private void Start()
+        {
+            CreateWorld();
         }
 
         private void Update()
         {
-            if (isTraining == false)
+            if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
             {
-                if (GenerationUI.Instance.generationCount == 0)
-                {
-                    InitializeAntNeuralNets();
-                }
-                else
-                {
-                    // Uses the CompareTo in NeuralNet to sort
-                    nets.Sort();
-
-                    // Keep best nets, and make rest of population into mutated versions of them
-                    for (int i = 0; i < populationSize / 2; i++)
-                    {
-                        // Make worst nets into mutated versions of best nets
-                        nets[i] = new NeuralNet(nets[i + (populationSize / 2)]);
-                        nets[i].mutateWeightsInMatrix();
-
-                        // Make deep copy of the good nets to reset neurons
-                        nets[i + (populationSize / 2)] = new NeuralNet(nets[i +
-                            (populationSize / 2)]); 
-                    }
-
-                    // Reset fitness
-                    for (int i = 0; i < populationSize; i++)
-                    {
-                        nets[i].setFitness(0f);
-                    }
-                }
-
+                ClearWorld();
+                ConfigurationManager.Instance.waitTimer = 0f;
+                CreateWorld();
 
                 GenerationUI.Instance.addGenerationToCount();
 
-                isTraining = true;
-
-                // Schedule the call to the function after 15s delay
-                // Will train for 15 seconds
-                Invoke("Timer", 60f);
-
-                Debug.Log("CREATING NEW ANTS");
-                GenerateAnts();
             }
+            else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
+
         }
 
 
