@@ -14,6 +14,10 @@ namespace Antymology.AgentScripts
 
         private float nestProbability = 0.90f;
 
+        public float _timeToWaitInbetween = 10f;
+        public float _waitTimer = 0f;
+
+
         private void Awake()
         {
             RNG = new System.Random();

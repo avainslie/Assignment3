@@ -18,16 +18,15 @@ namespace Antymology.AgentScripts
         public AntHealth antHealth;
 
         private AntHealth otherAntHealth;
-        //private antManager otherAntManager;
 
-        private float digProbability = 0.25f;
-        private float moveProbability = 0.90f;
-
-        public float _timeToWaitInbetween;
-        public float _waitTimer;
-
-        private bool initialized = false;
-        private NeuralNet net;
+        private float moveF;
+        private float moveB;
+        private float moveR;
+        private float moveL;
+        private float nothing;
+        private float dig;
+        private float eat;
+        // shareHealth
 
         [SerializeField] string currentBlock;
 
@@ -38,7 +37,6 @@ namespace Antymology.AgentScripts
 
             antHealth = GetComponent<AntHealth>();
 
-            currentBlock = "airblock";
         }
 
         private void Start()
@@ -48,51 +46,60 @@ namespace Antymology.AgentScripts
 
         private void Update()
         {
-            if (initialized == true)
+            int[] pos = getCurrentWorldXYZAnt();
+
+            int x = pos[0];
+            int y = pos[1];
+            int z = pos[2];
+
+            DirectionFinder.getPossibleDirections(x, y, z);
+
+            AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
+
+            currentBlock = ab.ToString();
+
+            // Get output from the current neural net
+            string decision = NeuralNetController.Instance.decision;
+
+            switch (decision)
             {
-                float[] inputs = new float[1];
-                float m = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble();
-                inputs[0] = m;
+                case "moveF":
+                    Debug.Log("MOVEF");
+                    break;
 
-                if (m > (1 - moveProbability))
-                    moveAnt();
+                case "moveB":
+                    Debug.Log("MOVEB");
+                    break;
 
-                float[] output = net.feedForward(inputs);
+                case "moveR":
+                    Debug.Log("MOVER");
+                    break;
 
-                m = output[0];
+                case "moveL":
+                    Debug.Log("MOVEL");
+                    break;
 
-                if (m > (1 - moveProbability))
-                    moveAnt();
+                case "nothing":
+                    Debug.Log("NOTHING");
+                    break;
 
-                // This should be how many nest blocks are produced or maybe queen health
-                // Maximize queen health -> more nest blocks
-                net.addFitness((1f - Mathf.Abs(inputs[0])));
+                case "dig":
+                    Debug.Log("DIG");
+                    digBlock(ab, x, y - 1 ,z);
+                    break;
 
+                case "eat":
+                    Debug.Log("EAT");
+                    break;
             }
-        }
 
-        public void Init(NeuralNet net)
-        {
-            this.net = net;
-            initialized = true;
-        }
-
-        public int[] getCurrentWorldXYZAnt()
-        {
-            int[] currentXYZWorldAntCoord = AntPosition.getAntCurrentPosition(transform.position);
-
-            return currentXYZWorldAntCoord;
         }
 
         #region MOVEMENT
 
 
-        // Only moves ants every X seconds, set in Inspector
         public void moveAnt()
         {
-
-            if (_waitTimer >= _timeToWaitInbetween)
-            {
                 int[] pos = getCurrentWorldXYZAnt();
 
                 int x = pos[0];
@@ -127,10 +134,8 @@ namespace Antymology.AgentScripts
 
                     // Everytime ant moves, check where he is
                     checkWhatBlockAntIsOn();
-                }
-                 _waitTimer = 0f;
             }
-            else { _waitTimer += 1 * Time.deltaTime; } 
+            
         }
 
         public void moveAntUpOne()
@@ -153,7 +158,13 @@ namespace Antymology.AgentScripts
             transform.position = new Vector3(x, y - 1, z);
         }
 
-        
+        public int[] getCurrentWorldXYZAnt()
+        {
+            int[] currentXYZWorldAntCoord = AntPosition.getAntCurrentPosition(transform.position);
+
+            return currentXYZWorldAntCoord;
+        }
+
 
         #endregion
 
@@ -172,24 +183,9 @@ namespace Antymology.AgentScripts
 
             AbstractBlock ab = WorldManager.Instance.GetBlock(x, y, z);
 
-            currentBlock = ab.ToString();
-
-            // Always changes
-            // TODO: MAKE THIS PROBABILITY PART OF THE "GENOME" 
-            float p = (float)new System.Random((int)System.DateTime.Now.Ticks).NextDouble();
-
-            // 20% probability to dig the block
-            if (p > (1 - digProbability))
-            {
-                digBlock(ab, x, y - 1, z);
-                antHealth.standingOnAcidicBlock = false;
-            }
-            else if ((WorldManager.Instance.Blocks[x, y - 1, z] as MulchBlock) != null)
-            {
-                antHealth.standingOnAcidicBlock = false;
-                consumeMulch(x, y - 1, z);
-            }
-            else if ((WorldManager.Instance.Blocks[x, y -1 , z] as AcidicBlock) != null)
+            currentBlock = ab.ToString(); // TODO: REMOVE, JUST FOR DEBUGGING
+                 
+            if ((WorldManager.Instance.Blocks[x, y -1 , z] as AcidicBlock) != null)
             {
                 antHealth.standingOnAcidicBlock = true;
                 
@@ -197,19 +193,8 @@ namespace Antymology.AgentScripts
             else
             {
                 antHealth.standingOnAcidicBlock = false;
-                //transform.position = new Vector3(x, y + 1, z);
+           
             }
-        }
-
-
-        private void consumeMulch(int xMulchBlock, int yMulchBlock, int zMulchBlock)
-        {
-            antHealth.eatMulchGainHealth();
-
-            // Replace mulch block with airblock
-            WorldManager.Instance.SetBlock(xMulchBlock, yMulchBlock, zMulchBlock, new AirBlock());
-            //moveAntDownOne();
-
         }
 
         // Remove block from world by digging it
@@ -221,6 +206,22 @@ namespace Antymology.AgentScripts
                 //moveAntDownOne();
             }
         }
+
+
+        private void consumeMulch(int x, int y, int z)
+        {
+
+            if ((WorldManager.Instance.Blocks[x, y - 1, z] as MulchBlock) != null)
+            {
+                antHealth.standingOnAcidicBlock = false;
+                antHealth.eatMulchGainHealth();
+                // Replace mulch block with airblock
+                WorldManager.Instance.SetBlock(x, y, z, new AirBlock());
+                //moveAntDownOne();
+            }
+        }
+
+
 
         #endregion
 

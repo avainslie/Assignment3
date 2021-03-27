@@ -263,8 +263,6 @@ namespace Antymology.Terrain
                     coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]),
                     Quaternion.identity)).GetComponent<antManager>();
 
-                ant.Init(nets[i]);
-                antList.Add(ant);
             }
 
             int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();

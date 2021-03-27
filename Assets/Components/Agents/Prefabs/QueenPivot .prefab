@@ -596,7 +596,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1967677298605092304}
   - component: {fileID: 957274557466606808}
-  - component: {fileID: 1697543021497389238}
   - component: {fileID: 1675815464356223979}
   - component: {fileID: 3780753034522300246}
   - component: {fileID: 7798631844824791110}
@@ -637,21 +636,6 @@ MonoBehaviour:
   health: 100
   standingOnAcidicBlock: 0
   canEat: 0
---- !u!114 &1697543021497389238
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6816324592678117931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: facc9202d4f704577b55550b5065f075, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  antHealth: {fileID: 0}
-  _timeToWaitInbetween: 2
-  _waitTimer: 0
 --- !u!65 &1675815464356223979
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -696,6 +680,7 @@ MonoBehaviour:
   antHealth: {fileID: 0}
   _timeToWaitInbetween: 2
   _waitTimer: 0
+  currentBlock: 
 --- !u!1 &7654562407789535066
 GameObject:
   m_ObjectHideFlags: 0
