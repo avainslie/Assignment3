@@ -559,6 +559,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generationCounter: {fileID: 0}
+  generationCount: 0
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -743,5 +744,5 @@ MonoBehaviour:
   Number_Of_Conatiner_Spheres: 5
   Conatiner_Sphere_Radius: 10
   numAntsToSpawn: 100
+  timeToWaitInbetween: 20
   waitTimer: 0
-  timeToWaitInbetween: 60

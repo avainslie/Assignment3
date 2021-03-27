@@ -52,10 +52,8 @@ namespace Antymology.AgentScripts
         // Use this for initialization
         public NeuralNet InitializeFirstNeuralNet()
         {
-            // TODO: HARD CODE ONLY FOR NOW, WILL CHANGE WITH ACTUAL NN
-            //outputs = new float[7] { 0f, 1f, 2f, 3f, 4f, 5f, 6f };
-
-            NeuralNet net = new NeuralNet(layers);
+            net = new NeuralNet(layers);
+            Debug.Log("FIRST NET INITIALIZED");
 
             return net;
         }
@@ -64,26 +62,19 @@ namespace Antymology.AgentScripts
         public string runNeuralNet(float[] inputs)
         {
             outputs = net.feedForward(inputs);
-
-            for (int i = 0; i < outputs.Length; i++)
-                Debug.Log(outputs[i]);
-
-            float r = Random.Range(0f, 6f);
-            int rr = CustomMath.fastfloor((double)r);
-
-            decision = possibleDecisions[rr];
+            // TODO: SOME OUTPUTS ARE NEGATIVE, IS THIS OK???
 
             // NN will give back an output with a larger weight.
             float highestProbability = outputs[0];
 
-            //for (int i = 0; i < outputs.Length; i++)
-            //{
-            //    if (outputs[i] > highestProbability)
-            //    {
-            //        highestProbability = outputs[i];
-            //        decision = possibleDecisions[i];
-            //    }
-            //}
+            for (int i = 0; i < outputs.Length; i++)
+            {
+                if (outputs[i] > highestProbability)
+                {
+                    highestProbability = outputs[i];
+                    decision = possibleDecisions[i];
+                }
+            }
 
 
             return decision;

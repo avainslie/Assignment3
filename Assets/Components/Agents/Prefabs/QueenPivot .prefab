@@ -595,10 +595,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1967677298605092304}
-  - component: {fileID: 957274557466606808}
   - component: {fileID: 1675815464356223979}
   - component: {fileID: 3780753034522300246}
   - component: {fileID: 7798631844824791110}
+  - component: {fileID: 1572500379787020732}
   m_Layer: 0
   m_Name: 'QueenPivot '
   m_TagString: queen
@@ -621,21 +621,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &957274557466606808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6816324592678117931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ab30cd79d6a4486b8648b0646447c2b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 100
-  standingOnAcidicBlock: 0
-  canEat: 0
 --- !u!65 &1675815464356223979
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -677,10 +662,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c172d4e42ce5145199022b83a4ab9ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  antHealth: {fileID: 0}
-  _timeToWaitInbetween: 2
+  _timeToWaitInbetween: 10
   _waitTimer: 0
-  currentBlock: 
+  queenAntHealth: {fileID: 0}
+--- !u!114 &1572500379787020732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6816324592678117931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ab30cd79d6a4486b8648b0646447c2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  standingOnAcidicBlock: 0
+  maxHealth: 100
+  canEat: 0
 --- !u!1 &7654562407789535066
 GameObject:
   m_ObjectHideFlags: 0

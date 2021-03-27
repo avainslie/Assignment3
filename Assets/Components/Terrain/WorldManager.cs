@@ -103,12 +103,11 @@ namespace Antymology.Terrain
         {
             if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
             {
+                
                 ClearWorld();
+                GenerationUI.Instance.addGenerationToCount();
                 ConfigurationManager.Instance.waitTimer = 0f;
                 CreateWorld();
-
-                GenerationUI.Instance.addGenerationToCount();
-
             }
             else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
 
@@ -150,7 +149,11 @@ namespace Antymology.Terrain
             if (GenerationUI.Instance.generationCount == 1)
                 n = NeuralNetController.Instance.InitializeFirstNeuralNet();
             else
+            {
                 n = NeuralNetController.Instance.net;
+                Debug.Log("not the first net");
+            }
+                
 
             for (int i = 0; i < populationSize; i ++)
             {

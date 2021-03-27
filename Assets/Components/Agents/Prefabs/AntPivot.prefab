@@ -707,12 +707,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 8547066344118986328}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ab30cd79d6a4486b8648b0646447c2b, type: 3}
+  m_Script: {fileID: 11500000, guid: facc9202d4f704577b55550b5065f075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
-  standingOnAcidicBlock: 0
-  canEat: 0
+  antHealth: {fileID: 0}
+  inputs: []
+  distToQueen: 0
+  xCoord: 0
+  yCoord: 0
+  zCoord: 0
+  currentHealth: 0
+  queensHealth: 0
+  currentBlock: 
+  antTimeToWaitInbetween: 10
+  antWaitTimer: 0
 --- !u!114 &-4644382237176523579
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -722,12 +730,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8547066344118986328}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: facc9202d4f704577b55550b5065f075, type: 3}
+  m_Script: {fileID: 11500000, guid: 6ab30cd79d6a4486b8648b0646447c2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  antHealth: {fileID: 0}
-  _timeToWaitInbetween: 2
-  _waitTimer: 0
+  health: 100
+  standingOnAcidicBlock: 0
+  maxHealth: 100
+  canEat: 0
 --- !u!65 &4558915907890519960
 BoxCollider:
   m_ObjectHideFlags: 0
