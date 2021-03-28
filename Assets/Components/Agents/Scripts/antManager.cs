@@ -19,8 +19,6 @@ namespace Antymology.AgentScripts
 
         private AntHealth otherAntHealth;
 
-        public NeuralNet antNet;
-
         private GameObject queen;
 
         private queenBehaviour queenBehaviour;
@@ -148,17 +146,21 @@ namespace Antymology.AgentScripts
             {
                 int[][] possibleDirections = DirectionFinder.getPossibleForwardORBackwardDirections(x, y, z, move);
 
-                if (possibleDirections.Length > 1)
-                    direction = RNG.Next(0, possibleDirections.Length - 1);
+                if (possibleDirections != null)
+                {
+                    if (possibleDirections.Length > 1)
+                        direction = RNG.Next(0, possibleDirections.Length - 1);
 
-                x = possibleDirections[direction][0];
+                    x = possibleDirections[direction][0];
 
-                y = possibleDirections[direction][1];
+                    y = possibleDirections[direction][1];
 
-                z = possibleDirections[direction][2];
+                    z = possibleDirections[direction][2];
 
-                // Apply movement
-                transform.position = new Vector3(x, y, z);
+                    // Apply movement
+                    transform.position = new Vector3(x, y, z);
+                }
+                
             }
 
             else

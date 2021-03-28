@@ -104,6 +104,11 @@ namespace Antymology.AgentScripts
             health -= (maxHealth / 3);
         }
 
+        public void resetHealth()
+        {
+            health = maxHealth;
+        }
+
         #endregion
 
 

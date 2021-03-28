@@ -8,7 +8,7 @@ public class NestUI : Singleton<NestUI>
 
     public Text nestBlockCounter;
 
-    private int nestBlockCount;
+    public int nestBlockCount;
 
     
     // Start is called before the first frame update

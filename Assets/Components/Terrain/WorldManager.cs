@@ -60,8 +60,20 @@ namespace Antymology.Terrain
 
         /// <summary>
         /// Neural net associated with each ant. May change each generation
+        /// Related to NNs, the job of WorldManager is to instantiate them and
+        /// send them information about the fitness they acheive. 
         /// </summary>
-        public NeuralNet n;
+        public NeuralNet worldManagerNet;
+
+        /// <summary>
+        /// All the ants we make 
+        /// </summary>
+        private List<GameObject> antList;
+
+        /// <summary>
+        /// The queen we make
+        /// </summary>
+        private GameObject queen;
 
 
         #endregion
@@ -92,6 +104,10 @@ namespace Antymology.Terrain
                 ConfigurationManager.Instance.World_Diameter,
                 ConfigurationManager.Instance.World_Height,
                 ConfigurationManager.Instance.World_Diameter];
+
+            antList = new List<GameObject>();
+
+            worldManagerNet = NeuralNetController.Instance.InitializeFirstNeuralNet();
         }
 
         private void Start()
@@ -103,11 +119,19 @@ namespace Antymology.Terrain
         {
             if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
             {
-                
+                worldManagerNet.setFitness(NestUI.Instance.nestBlockCount);
+                NeuralNetController.Instance.nets.Add(worldManagerNet);
                 ClearWorld();
                 GenerationUI.Instance.addGenerationToCount();
                 ConfigurationManager.Instance.waitTimer = 0f;
+
+                if (GenerationUI.Instance.generationCount > 1)
+                {
+                    NeuralNetController.Instance.compareNetsAndMutateBest();   
+                }
+
                 CreateWorld();
+
             }
             else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
 
@@ -138,35 +162,42 @@ namespace Antymology.Terrain
         /// </summary>
         private void GenerateAnts()
         {
-            //int[] coordinatesForQueenAntInstantiation = GenerateRandomWorldCoordinates();
-            //Instantiate(queenPrefab, new Vector3(coordinatesForQueenAntInstantiation[0] - 0.25f, coordinatesForQueenAntInstantiation[1] - 0.23f, coordinatesForQueenAntInstantiation[2]), Quaternion.identity);
             float queenYForInstan = getHeightAt(1, 1);
-            GameObject queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan - 0.23f, 1f), Quaternion.identity);
-
-            queen.transform.Rotate(new Vector3(0, 90, 0));
-            //queen.transform.position += new Vector3(1f, queenYForInstan - 0.23f, 1f + 0.25f);
 
             if (GenerationUI.Instance.generationCount == 1)
-                n = NeuralNetController.Instance.InitializeFirstNeuralNet();
+            { 
+                queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan - 0.23f, 1f), Quaternion.identity);
+
+                queen.transform.Rotate(new Vector3(0, 90, 0));
+                //queen.transform.position += new Vector3(1f, queenYForInstan - 0.23f, 1f + 0.25f);
+           
+                for (int i = 0; i < populationSize; i++)
+                {
+                    int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
+
+                    // Subtract a little from the x and y to accommodate for the weird ant prefab
+                    GameObject ant = Instantiate(antPrefab, new
+                        Vector3(coordinatesForAntInstantiation[0] - 0.25f,
+                        coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]),
+                        Quaternion.identity);
+
+                    antList.Add(ant);
+                }
+            }
+
             else
             {
-                n = NeuralNetController.Instance.net;
-                Debug.Log("not the first net");
-            }
-                
+                queen.transform.position = new Vector3(1f, queenYForInstan - 0.23f, 1f);
+                queen.GetComponent<AntHealth>().resetHealth();
 
-            for (int i = 0; i < populationSize; i ++)
-            {
-                int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
+                foreach (GameObject ant in antList)
+                {
+                    ant.GetComponent<AntHealth>().resetHealth();
+                    int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
+                    ant.transform.position = new Vector3(coordinatesForAntInstantiation[0] - 0.25f,
+                        coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]);
 
-                // Subtract a little from the x and y to accommodate for the weird ant prefab
-                antManager ant = (Instantiate(antPrefab, new
-                    Vector3(coordinatesForAntInstantiation[0] - 0.25f,
-                    coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]),
-                    Quaternion.identity)).GetComponent<antManager>();
-
-                ant.antNet = new NeuralNet(n);
-                
+                }
             }
         }
 
@@ -193,8 +224,14 @@ namespace Antymology.Terrain
             for (int i = 0; i < GameObjects.Length; i++)
             {
                 // Tagged things like directional light with "worldManager" to keep it simple
-                if (!GameObjects[i].CompareTag("worldManager") && !GameObjects[i].CompareTag("MainCamera"))
+                if (!GameObjects[i].CompareTag("worldManager") && !GameObjects[i].
+                    CompareTag("MainCamera") && !GameObjects[i].CompareTag("ant")
+                    && !GameObjects[i].CompareTag("queen"))
+                {
                     Destroy(GameObjects[i]);
+                }
+                    
+                    
             }
         }
         
@@ -207,7 +244,6 @@ namespace Antymology.Terrain
                 WorldXCoordinate > Blocks.GetLength(0) ||
                 WorldYCoordinate > Blocks.GetLength(1) ||
                 WorldZCoordinate > Blocks.GetLength(2) ||
-                // Lines below (and <= above) should theoretically prevent ant from instantiating on world edge container block???
                 WorldXCoordinate >= Blocks.GetLength(0) - 1 ||
                 WorldZCoordinate >= Blocks.GetLength(2) - 1)
                 return true;

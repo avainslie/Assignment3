@@ -148,7 +148,7 @@ namespace Antymology.AgentScripts
         {
 
             // Default where to "slice" the jagged array
-            int whereToSlice = 8;
+            int whereToSlice = 3;
 
             // Set whereToSlice to the first all zero sub array in jagged array
             for (int i = 0; i < possibleDirections.Length; i++)

@@ -191,7 +191,7 @@ namespace Antymology.AgentScripts
         }
 
         // Helps to sort neural nets by their fitness in ascending fitness order
-         public int CompareTo(NeuralNet otherNeuralNet)
+        public int CompareTo(NeuralNet otherNeuralNet)
         {
             if (otherNeuralNet == null) return 1;
 

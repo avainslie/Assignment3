@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Antymology.Helpers;
-
+using System.Collections.Generic;
 
 namespace Antymology.AgentScripts
 {
@@ -45,6 +45,8 @@ namespace Antymology.AgentScripts
         // Used by ants
         public NeuralNet net;
 
+        public List<NeuralNet> nets;
+
         public static readonly NeuralNetController Instance = new NeuralNetController();
 
         private NeuralNetController() { }
@@ -53,6 +55,7 @@ namespace Antymology.AgentScripts
         public NeuralNet InitializeFirstNeuralNet()
         {
             net = new NeuralNet(layers);
+            nets = new List<NeuralNet>();
             Debug.Log("FIRST NET INITIALIZED");
 
             return net;
@@ -75,11 +78,37 @@ namespace Antymology.AgentScripts
                     decision = possibleDecisions[i];
                 }
             }
-
-
             return decision;
-
         }
+
+        private NeuralNet pickTheBestNet(NeuralNet n1, NeuralNet n2)
+        {
+            if (n1.CompareTo(n2) == 1)
+                return n1;
+            else if (n1.CompareTo(n2) == -1)
+                return n2;
+            else
+                return n1;
+        }
+
+        // Compare the current and most recent previous nets
+        public void compareNetsAndMutateBest()
+        {
+            // Second last element
+            // https://stackoverflow.com/questions/22857137/how-to-find-second-last-element-from-a-list/22857667
+            NeuralNet mostRecentPreviousNet = null;
+            if (nets.Count > 2)
+                mostRecentPreviousNet = nets[nets.Count - 2];
+
+            net = pickTheBestNet(net, mostRecentPreviousNet);
+
+            net.mutateWeightsInMatrix();
+
+            Debug.Log("compareNetsAndMutateBest");
+        }
+
+
+
     }
 }
 
