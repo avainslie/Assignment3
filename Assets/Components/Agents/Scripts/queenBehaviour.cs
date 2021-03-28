@@ -27,23 +27,24 @@ namespace Antymology.AgentScripts
 
         private void checkQueenHealth()
         {
-            if (queenAntHealth.health > queenAntHealth.maxHealth / 3)
+            if (queenAntHealth.health > 1000 / 3)
             {
                 produceNestBlock();
 
-                int[] queenCurrentPosition = antAndQueenController.Instance.getCurrentWorldXYZAnt(gameObject);
+                int[] queenCurrentPosition = antAndQueenController.getCurrentWorldXYZAnt(gameObject);
                 int queenX = queenCurrentPosition[0];
                 int queenY = queenCurrentPosition[1];
                 int queenZ = queenCurrentPosition[2];
 
-                int yInfrontOfQueen = WorldManager.Instance.getHeightAt(queenX, queenZ);
+                int yInfrontOfQueen = WorldManager.Instance.getHeightAt(queenX, queenZ + 1);
+
 
                 // If nothing greater or smaller in height diff of 2 infront of her
                 // Then move forward
                 if (Mathf.Abs(queenY - yInfrontOfQueen) < 2)
-                {
-                    moveQueenforward();
-                }
+                    transform.position = new Vector3(queenX, yInfrontOfQueen, queenZ + 1);
+                
+  
             }
                 
             
@@ -51,14 +52,14 @@ namespace Antymology.AgentScripts
 
         private void produceNestBlock()
         {
-            int[] pos = antAndQueenController.Instance.getCurrentWorldXYZAnt(gameObject);
+            int[] pos = antAndQueenController.getCurrentWorldXYZAnt(gameObject);
 
             int x = pos[0];
             int y = pos[1];
             int z = pos[2];
 
             WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
-            antAndQueenController.Instance.moveAntUpOne(gameObject);
+            antAndQueenController.moveAntUpOne(gameObject);
 
             NestUI.Instance.addNestBlockToCount();
 

@@ -176,9 +176,13 @@ namespace Antymology.Terrain
                     int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
 
                     // Subtract a little from the x and y to accommodate for the weird ant prefab
+                    //GameObject ant = Instantiate(antPrefab, new
+                    //    Vector3(coordinatesForAntInstantiation[0] - 0.25f,
+                    //    coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]),
+                    //    Quaternion.identity);
                     GameObject ant = Instantiate(antPrefab, new
-                        Vector3(coordinatesForAntInstantiation[0] - 0.25f,
-                        coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]),
+                        Vector3(coordinatesForAntInstantiation[0],
+                        coordinatesForAntInstantiation[1], coordinatesForAntInstantiation[2]),
                         Quaternion.identity);
 
                     antList.Add(ant);

@@ -468,6 +468,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nestBlockCounter: {fileID: 0}
+  nestBlockCount: 0
 --- !u!1 &959024512
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,7 +704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbd0fdbaf66dc1a4488d999aa299645f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  antPrefab: {fileID: 8547066344118986328, guid: 12a7b8a85aeb84570b46bad83d5307f4,
+  antPrefab: {fileID: 9195433069832388271, guid: 0855c952f5b3e47b287808409c03a783,
     type: 3}
   queenPrefab: {fileID: 6816324592678117931, guid: 4c6272b0cfe6b436b9458b6f20735090,
     type: 3}
@@ -743,6 +744,6 @@ MonoBehaviour:
   Acidic_Region_Radius: 5
   Number_Of_Conatiner_Spheres: 5
   Conatiner_Sphere_Radius: 10
-  numAntsToSpawn: 100
-  timeToWaitInbetween: 20
+  numAntsToSpawn: 250
+  timeToWaitInbetween: 60
   waitTimer: 0

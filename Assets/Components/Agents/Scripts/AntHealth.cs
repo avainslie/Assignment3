@@ -22,7 +22,7 @@ namespace Antymology.AgentScripts
         {
             standingOnAcidicBlock = false;
             canEat = true;
-            maxHealth = 100;
+            maxHealth = 1000;
 
             // Waits 5s to start then calls function in 1st arg every 5s
             InvokeRepeating("lowerAntHealthFixedAmount", 5f, 5f);
@@ -48,22 +48,24 @@ namespace Antymology.AgentScripts
 
         private void lowerAntHealthFixedAmount()
         {
-            if (standingOnAcidicBlock)
+            if (!gameObject.tag.Equals("queen"))
             {
-                health -= 10f;
+                if (standingOnAcidicBlock)
+                {
+                    health -= 10f;
+                }
+                else
+                {
+                    health -= 5f;
+                }
             }
-            else
-            {
-                health -= 5f;
-            }
-
         }
 
 
         // Checks if ant is dead and should be removed
         private bool isAntAlive()
         {
-            if (health <= 0f)
+            if (health <= 0f && !gameObject.tag.Equals("queen")) // Queen never dies
             {
                 Destroy(gameObject);
                 return false;
@@ -90,13 +92,14 @@ namespace Antymology.AgentScripts
 
         public float shareHealth(float otherAntHealth, string otherTag)
         {
-            health -= 5;
+            health -= 15;
             if (otherTag.Equals("queen"))
             {
-                health -= 10;
-                return 15;
+                Debug.Log("Sharing health to queen");
+                health -= 400;
+                return 415;
             }
-            return 5;
+            return 15;
         }
 
         public void costQueenHealth()

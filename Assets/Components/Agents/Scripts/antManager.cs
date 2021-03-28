@@ -63,13 +63,15 @@ namespace Antymology.AgentScripts
 
             if (antWaitTimer >= antTimeToWaitInbetween)
             {
-                int[] pos = antAndQueenController.Instance.getCurrentWorldXYZAnt(gameObject);
+                //int[] pos = antAndQueenController.getCurrentWorldXYZAnt(gameObject);
 
-                int xCoord = pos[0];
-                int yCoord = pos[1];
-                int zCoord = pos[2];
+                int[] pos = AntPosition.getAntCurrentPosition(transform.position);
 
-                AbstractBlock ab = WorldManager.Instance.GetBlock(xCoord, yCoord, zCoord);
+                xCoord = pos[0];
+                yCoord = pos[1];
+                zCoord = pos[2];
+
+                AbstractBlock ab = WorldManager.Instance.GetBlock( (int) xCoord, (int) yCoord, (int) zCoord);
 
                 currentBlock = ab.ToString();
 
@@ -116,12 +118,12 @@ namespace Antymology.AgentScripts
 
                     case "dig":
                         Debug.Log("DIG");
-                        digBlock(ab, xCoord, yCoord - 1 ,zCoord);
+                        digBlock(ab, (int) xCoord, (int) yCoord - 1 , (int) zCoord);
                         break;
 
                     case "eat":
                         Debug.Log("EAT");
-                        consumeMulch(xCoord, yCoord, zCoord);
+                        consumeMulch((int) xCoord, (int) yCoord, (int) zCoord);
                         break;
                 }
                     antWaitTimer = 0f;
@@ -134,7 +136,7 @@ namespace Antymology.AgentScripts
 
         public void moveAnt(string move)
         {
-            int[] pos = antAndQueenController.Instance.getCurrentWorldXYZAnt(gameObject);
+            int[] pos = antAndQueenController.getCurrentWorldXYZAnt(gameObject);
 
             int x = pos[0];
             int y = pos[1];

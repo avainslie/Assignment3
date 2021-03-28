@@ -719,7 +719,7 @@ MonoBehaviour:
   currentHealth: 0
   queensHealth: 0
   currentBlock: 
-  antTimeToWaitInbetween: 10
+  antTimeToWaitInbetween: 5
   antWaitTimer: 0
 --- !u!114 &-4644382237176523579
 MonoBehaviour:
@@ -733,9 +733,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ab30cd79d6a4486b8648b0646447c2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
+  health: 1000
   standingOnAcidicBlock: 0
-  maxHealth: 100
+  maxHealth: 1000
   canEat: 0
 --- !u!65 &4558915907890519960
 BoxCollider:
