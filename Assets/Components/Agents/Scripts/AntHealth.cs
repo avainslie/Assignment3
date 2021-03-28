@@ -52,11 +52,11 @@ namespace Antymology.AgentScripts
             {
                 if (standingOnAcidicBlock)
                 {
-                    health -= 10f;
+                    health -= 4f;
                 }
                 else
                 {
-                    health -= 5f;
+                    health -= 2f;
                 }
             }
         }
@@ -67,7 +67,8 @@ namespace Antymology.AgentScripts
         {
             if (health <= 0f && !gameObject.tag.Equals("queen")) // Queen never dies
             {
-                Destroy(gameObject);
+                //Destroy(gameObject);
+                gameObject.SetActive(false);
                 return false;
             }
             return true;
@@ -78,7 +79,7 @@ namespace Antymology.AgentScripts
         {
             if (canEat)
             {
-                health += 10;
+                health += 50;
             }
         }
 

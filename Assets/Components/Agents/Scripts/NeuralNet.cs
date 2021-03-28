@@ -158,26 +158,26 @@ namespace Antymology.AgentScripts
                         //mutate weight value 
                         float randomNumber = UnityEngine.Random.Range(0f, 100f);
 
-                        // 0.8% chance a mutation will occur
-                        // Each mutation has a 0.2% chance
+                        // 40% chance a mutation will occur
+                        // Each mutation has a 10% chance
 
-                        if (randomNumber <= 2f)
+                        if (randomNumber <= 10f)
                         { 
                           //flip sign of weight
                             weight *= -1f;
                         }
-                        else if (randomNumber <= 4f)
+                        else if (randomNumber <= 20f)
                         { 
                           //pick random weight between -0.5 and 0.5
                             weight = UnityEngine.Random.Range(-0.5f, 0.5f);
                         }
-                        else if (randomNumber <= 6f)
+                        else if (randomNumber <= 30f)
                         { 
                           //randomly increase by 0% to 100%
                             float factor = UnityEngine.Random.Range(0f, 1f) + 1f;
                             weight *= factor;
                         }
-                        else if (randomNumber <= 8f)
+                        else if (randomNumber <= 40f)
                         { 
                           //randomly decrease by 0% to 100%
                             float factor = UnityEngine.Random.Range(0f, 1f);

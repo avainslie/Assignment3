@@ -166,7 +166,7 @@ namespace Antymology.Terrain
 
             if (GenerationUI.Instance.generationCount == 1)
             { 
-                queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan - 0.23f, 1f), Quaternion.identity);
+                queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan, 1f), Quaternion.identity);
 
                 queen.transform.Rotate(new Vector3(0, 90, 0));
                 //queen.transform.position += new Vector3(1f, queenYForInstan - 0.23f, 1f + 0.25f);
@@ -175,11 +175,6 @@ namespace Antymology.Terrain
                 {
                     int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
 
-                    // Subtract a little from the x and y to accommodate for the weird ant prefab
-                    //GameObject ant = Instantiate(antPrefab, new
-                    //    Vector3(coordinatesForAntInstantiation[0] - 0.25f,
-                    //    coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]),
-                    //    Quaternion.identity);
                     GameObject ant = Instantiate(antPrefab, new
                         Vector3(coordinatesForAntInstantiation[0],
                         coordinatesForAntInstantiation[1], coordinatesForAntInstantiation[2]),
@@ -191,15 +186,16 @@ namespace Antymology.Terrain
 
             else
             {
-                queen.transform.position = new Vector3(1f, queenYForInstan - 0.23f, 1f);
+                queen.transform.position = new Vector3(1f, queenYForInstan, 1f);
                 queen.GetComponent<AntHealth>().resetHealth();
 
                 foreach (GameObject ant in antList)
                 {
                     ant.GetComponent<AntHealth>().resetHealth();
+                    ant.SetActive(true);
                     int[] coordinatesForAntInstantiation = GenerateRandomWorldCoordinates();
-                    ant.transform.position = new Vector3(coordinatesForAntInstantiation[0] - 0.25f,
-                        coordinatesForAntInstantiation[1] - 0.23f, coordinatesForAntInstantiation[2]);
+                    ant.transform.position = new Vector3(coordinatesForAntInstantiation[0],
+                        coordinatesForAntInstantiation[1], coordinatesForAntInstantiation[2]);
 
                 }
             }
@@ -208,6 +204,11 @@ namespace Antymology.Terrain
         #endregion
 
         #region Helpers
+
+        private void Timer()
+        {
+            GenerateAnts();
+        }
 
         private void CreateWorld()
         {
@@ -218,6 +219,7 @@ namespace Antymology.Terrain
             Camera.main.transform.LookAt(new Vector3(Blocks.GetLength(0), 0, Blocks.GetLength(2)));
 
             GenerateAnts();
+            //Invoke("Timer", 3f);     
         }
 
         private void ClearWorld()

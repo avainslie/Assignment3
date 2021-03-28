@@ -60,11 +60,10 @@ namespace Antymology.AgentScripts
 
         private void Update()
         {
+            checkIfOnAcidicBlock();
 
             if (antWaitTimer >= antTimeToWaitInbetween)
             {
-                //int[] pos = antAndQueenController.getCurrentWorldXYZAnt(gameObject);
-
                 int[] pos = AntPosition.getAntCurrentPosition(transform.position);
 
                 xCoord = pos[0];
@@ -101,15 +100,17 @@ namespace Antymology.AgentScripts
                         break;
 
                     case "moveR":
-                        moveAnt("R");
-                        Debug.Log("MOVER");
                         transform.Rotate(new Vector3(0, 90, 0));
+                        moveAnt("F");
+                        Debug.Log("MOVER");
+                        
                         break;
 
                     case "moveL":
-                        moveAnt("L");
-                        Debug.Log("MOVEL");
                         transform.Rotate(new Vector3(0, -90, 0));
+                        moveAnt("F");
+                        Debug.Log("MOVEL");
+                        
                         break;
 
                     case "nothing":
@@ -118,15 +119,16 @@ namespace Antymology.AgentScripts
 
                     case "dig":
                         Debug.Log("DIG");
-                        digBlock(ab, (int) xCoord, (int) yCoord - 1 , (int) zCoord);
+                        digBlock((int) xCoord, (int) yCoord - 1 , (int) zCoord);
                         break;
 
                     case "eat":
                         Debug.Log("EAT");
-                        consumeMulch((int) xCoord, (int) yCoord, (int) zCoord);
+                        consumeMulch((int) xCoord, (int) yCoord - 1, (int) zCoord);
                         break;
                 }
-                    antWaitTimer = 0f;
+                checkIfOnAcidicBlock();
+                antWaitTimer = 0f;
             }
             else { antWaitTimer += 1 * Time.deltaTime; }
 
@@ -134,6 +136,21 @@ namespace Antymology.AgentScripts
 
         #region MOVEMENT
 
+        public void checkIfOnAcidicBlock()
+        {
+            int[] pos = AntPosition.getAntCurrentPosition(transform.position);
+
+            xCoord = pos[0];
+            yCoord = pos[1];
+            zCoord = pos[2];
+
+            if ((WorldManager.Instance.GetBlock((int)xCoord, (int)yCoord - 1, (int)zCoord) as AcidicBlock ) != null)
+                antHealth.standingOnAcidicBlock = true;
+            else
+                antHealth.standingOnAcidicBlock = false;
+        }
+
+       
         public void moveAnt(string move)
         {
             int[] pos = antAndQueenController.getCurrentWorldXYZAnt(gameObject);
@@ -190,25 +207,25 @@ namespace Antymology.AgentScripts
         #region INTERACT WITH BLOCKS
 
         // Remove block from world by digging it
-        private void digBlock(AbstractBlock currentBlock, int xBlockToDig, int yBlockToDig, int zBlockToDig)
+        private void digBlock(int xBlockToDig, int yBlockToDig, int zBlockToDig)
         {
-            if ((currentBlock as ContainerBlock) == null)
+            if ((WorldManager.Instance.GetBlock(xBlockToDig, yBlockToDig, zBlockToDig) as ContainerBlock) == null)
             {
                 WorldManager.Instance.SetBlock(xBlockToDig, yBlockToDig, zBlockToDig, new AirBlock());
-                //moveAntDownOne();
+                transform.position = new Vector3(xBlockToDig, yBlockToDig, zBlockToDig);
             }
         }
 
 
-        private void consumeMulch(int x, int y, int z)
+        private void consumeMulch(int xBlockToEat, int yBlockToEat, int zBlockToEat)
         {
-            if ((WorldManager.Instance.Blocks[x, y - 1, z] as MulchBlock) != null)
+            if ((WorldManager.Instance.GetBlock(xBlockToEat, yBlockToEat, zBlockToEat) as MulchBlock) != null)
             {
                 antHealth.standingOnAcidicBlock = false;
                 antHealth.eatMulchGainHealth();
                 // Replace mulch block with airblock
-                WorldManager.Instance.SetBlock(x, y, z, new AirBlock());
-                //moveAntDownOne();
+                WorldManager.Instance.SetBlock(xBlockToEat, yBlockToEat, zBlockToEat, new AirBlock());
+                transform.position = new Vector3(xBlockToEat, yBlockToEat, zBlockToEat);
             }
         }
 

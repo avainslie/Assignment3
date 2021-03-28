@@ -49,7 +49,7 @@ namespace Antymology.AgentScripts
                 neighbourYCoords[i] = WorldManager.Instance.getHeightAt(
                     neighbourXZCoords[i][0], neighbourXZCoords[i][1]);
 
-                if (Mathf.Abs(neighbourYCoords[i] - yCoord) < 2 &&
+                if (Mathf.Abs(neighbourYCoords[i] - yCoord) <= 2 &&
                     !WorldManager.Instance.checkIfCoordinatesAreNotInWorld(
                         neighbourXZCoords[i][0], neighbourYCoords[i],
                         neighbourXZCoords[i][1]))
@@ -74,7 +74,7 @@ namespace Antymology.AgentScripts
         {
             int neighbourYCoord = WorldManager.Instance.getHeightAt(xToCheck, z);
 
-            if (Mathf.Abs(neighbourYCoord - y) < 2 && !WorldManager.Instance.
+            if (Mathf.Abs(neighbourYCoord - y) <= 2 && !WorldManager.Instance.
                 checkIfCoordinatesAreNotInWorld(xToCheck, neighbourYCoord, z))
                 return true;
 
@@ -121,7 +121,9 @@ namespace Antymology.AgentScripts
                 // If the difference between the neighbouring block and current
                 // block is less than 2 units save the coordinates as a possible
                 // direction to move in. And check if valid world coords
-                if (Mathf.Abs(neighbourYCoords[i] - yCoord) < 2 &&
+                // Also inclduded equals to 2, since they should be able to move
+                // to a block with a height diff of 2
+                if (Mathf.Abs(neighbourYCoords[i] - yCoord) <= 2 &&
                     !WorldManager.Instance.checkIfCoordinatesAreNotInWorld(
                         neighbourXZCoords[i][0], neighbourYCoords[i],
                         neighbourXZCoords[i][1]))

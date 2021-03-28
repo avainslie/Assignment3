@@ -756,7 +756,7 @@ GameObject:
   - component: {fileID: -7056206835651120482}
   - component: {fileID: 4487201042770225525}
   m_Layer: 0
-  m_Name: cubeContainingAnt
+  m_Name: cubeAnt
   m_TagString: ant
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -873,5 +873,5 @@ MonoBehaviour:
   currentHealth: 0
   queensHealth: 0
   currentBlock: 
-  antTimeToWaitInbetween: 5
+  antTimeToWaitInbetween: 1
   antWaitTimer: 0

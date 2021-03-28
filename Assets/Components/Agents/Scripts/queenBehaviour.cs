@@ -10,8 +10,8 @@ namespace Antymology.AgentScripts
 {
     public class queenBehaviour : MonoBehaviour
     {
-        public float _timeToWaitInbetween = 10f;
-        public float _waitTimer = 0f;
+        public float queenTimeToWaitInbetween = 2f;
+        public float queenWaitTimer = 0f;
 
         public AntHealth queenAntHealth;
 
@@ -20,14 +20,16 @@ namespace Antymology.AgentScripts
             queenAntHealth = GetComponent<AntHealth>();
         }
 
-        private void LateUpdate()
+        private void Update()
         {
-            checkQueenHealth();
+            checkQueenHealthAndMove();
         }
 
-        private void checkQueenHealth()
+        private void checkQueenHealthAndMove()
         {
-            if (queenAntHealth.health > 1000 / 3)
+            if (queenWaitTimer >= queenTimeToWaitInbetween)
+            {
+                if (queenAntHealth.health > (1000 / 3))
             {
                 produceNestBlock();
 
@@ -37,17 +39,38 @@ namespace Antymology.AgentScripts
                 int queenZ = queenCurrentPosition[2];
 
                 int yInfrontOfQueen = WorldManager.Instance.getHeightAt(queenX, queenZ + 1);
+                int yToRightOfQueen = WorldManager.Instance.getHeightAt(queenX + 1, queenZ);
+                int yToLeftOfQueen = WorldManager.Instance.getHeightAt(queenX - 1, queenZ);
 
 
                 // If nothing greater or smaller in height diff of 2 infront of her
                 // Then move forward
-                if (Mathf.Abs(queenY - yInfrontOfQueen) < 2)
+                if (Mathf.Abs(queenY - yInfrontOfQueen) <= 2)
+                {
                     transform.position = new Vector3(queenX, yInfrontOfQueen, queenZ + 1);
-                
-  
+                }
+
+                else if (Mathf.Abs(queenY - yToLeftOfQueen) <= 2 && (WorldManager.
+                    Instance.GetBlock(queenX - 1, yToLeftOfQueen, queenZ) as NestBlock) == null)
+                {
+                    transform.position = new Vector3(queenX - 1, yToLeftOfQueen, queenZ);
+                    transform.Rotate(new Vector3(0, -90, 0));
+                }
+
+                else if (Mathf.Abs(queenY - yToRightOfQueen) <= 2)
+                {
+                    transform.position = new Vector3(queenX + 1, yToRightOfQueen, queenZ);
+                    transform.Rotate(new Vector3(0, 90, 0));
+                }
+
+
             }
-                
-            
+                queenWaitTimer = 0f;
+            }
+            else { queenWaitTimer += 1 * Time.deltaTime; }
+
+
+
         }
 
         private void produceNestBlock()
@@ -58,50 +81,16 @@ namespace Antymology.AgentScripts
             int y = pos[1];
             int z = pos[2];
 
-            WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
-            antAndQueenController.moveAntUpOne(gameObject);
+            if (queenAntHealth.health >= (1000 / 3))
+            {
+                WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
+                antAndQueenController.moveAntUpOne(gameObject);
 
-            NestUI.Instance.addNestBlockToCount();
+                NestUI.Instance.addNestBlockToCount();
 
-            queenAntHealth.costQueenHealth();
-        }
-
-        private void moveQueen()
-        {
-            // MOVE QUEEN IN A SMART WAY TO MAXIMIZE NEST BLOCK PRODUCTION
-
-            // ASSUMING NO OBSTACLES (aka no block greater than 2 height diff)
-
-            // Go forward until hit wall
-            // Turn right
-            // Turn right
-            // Go forward until hit wall
-            // Turn left
-            // Turn left
-            // Repeat
-            // If wall on right
-            // Move up one
-            // Repeat
-        }
-
-        private void moveQueenforward()
-        {
-           
-        }
-
-        private void turnQueenRight()
-        {
-
-        }
-
-        private void turnQueenLeft()
-        {
-
-        }
-
-        private void moveQueenUpOne()
-        {
-
+                queenAntHealth.costQueenHealth();
+            }
+            
         }
 
     }
