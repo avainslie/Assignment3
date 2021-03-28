@@ -245,15 +245,29 @@ namespace Antymology.AgentScripts
 
         private void OnTriggerEnter(Collider other)
         {
+            Debug.Log("SOMETHING COLLIDED");
             if (other.CompareTag("ant") || other.CompareTag("queen"))
             {
+                Debug.Log("ANT OR QUEEN COLLISION");
                 antHealth.canEat = false;
 
                 otherAntHealth = other.GetComponent<AntHealth>();
 
                 // Ants may give some of their health to other ants occupying the same space (must be a zero-sum exchange)
-                antHealth.shareHealthToAntWithLess(other.tag, otherAntHealth);
+                if (otherAntHealth != null)
+                    antHealth.shareHealthToAntWithLess(other.tag, otherAntHealth);
+
+                Invoke("adjustHeight", 1f);
             }
+        }
+
+        private void adjustHeight()
+        {
+            int[] pos = AntPosition.getAntCurrentPosition(transform.position);
+            int x = pos[0];
+            int z = pos[2];
+            int y = WorldManager.Instance.getHeightAt(x, z);
+            transform.position = new Vector3(x, y, z);
         }
 
 

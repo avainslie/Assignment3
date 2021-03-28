@@ -2,6 +2,8 @@
 using System.Collections;
 using Antymology.Helpers;
 using System.Collections.Generic;
+using System.IO;
+using System;
 
 namespace Antymology.AgentScripts
 {
@@ -31,6 +33,8 @@ namespace Antymology.AgentScripts
         private float[] outputs = new float[7];
 
         private float[] inputs;
+
+        string fpath = @"D:\TestUnityAssingment3IAMHERE.txt";
 
         // INPUTS
         public float distToQueen;
@@ -81,14 +85,25 @@ namespace Antymology.AgentScripts
             return decision;
         }
 
+        // Always pass in current net as n1 and most recent previous net as n2
         private NeuralNet pickTheBestNet(NeuralNet n1, NeuralNet n2)
         {
             if (n1.CompareTo(n2) == 1)
+            {
+                nets.Remove(nets[nets.Count - 2]);
                 return n1;
+            }  
             else if (n1.CompareTo(n2) == -1)
+            {
+                nets.Remove(nets[nets.Count - 1]);
                 return n2;
+            }
             else
+            {
+                nets.Remove(nets[nets.Count - 2]);
                 return n1;
+            }
+                
         }
 
         // Compare the current and most recent previous nets
@@ -105,6 +120,39 @@ namespace Antymology.AgentScripts
             net.mutateWeightsInMatrix();
 
             Debug.Log("compareNetsAndMutateBest");
+        }
+
+
+        public void WriteToFile(NeuralNet toWrite)
+        {
+
+            if (File.Exists(fpath))
+
+            {
+
+                File.Delete(fpath);
+
+            }
+
+
+            BinaryWriter writer = new BinaryWriter(File.Open(fpath, FileMode.Create));
+
+            
+
+            //writer.Write(each neuron of each layer);
+        }
+
+        public void ReadFile()
+        {
+            try
+            {
+
+            }
+
+            catch (Exception e)
+            {
+                Debug.Log("file didn't exist" + e.StackTrace);
+            }
         }
 
 

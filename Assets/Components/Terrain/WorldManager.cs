@@ -75,6 +75,8 @@ namespace Antymology.Terrain
         /// </summary>
         private GameObject queen;
 
+        private bool simulationNotDone = true;
+
 
         #endregion
 
@@ -117,23 +119,29 @@ namespace Antymology.Terrain
 
         private void Update()
         {
-            if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
+            Invoke("endSimulation" , 1200f);
+
+            while (simulationNotDone)
             {
-                worldManagerNet.setFitness(NestUI.Instance.nestBlockCount);
-                NeuralNetController.Instance.nets.Add(worldManagerNet);
-                ClearWorld();
-                GenerationUI.Instance.addGenerationToCount();
-                ConfigurationManager.Instance.waitTimer = 0f;
-
-                if (GenerationUI.Instance.generationCount > 1)
+                if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
                 {
-                    NeuralNetController.Instance.compareNetsAndMutateBest();   
-                }
+                    worldManagerNet.setFitness(NestUI.Instance.nestBlockCount);
+                    NeuralNetController.Instance.nets.Add(worldManagerNet);
+                    ClearWorld();
+                    GenerationUI.Instance.addGenerationToCount();
+                    ConfigurationManager.Instance.waitTimer = 0f;
 
-                CreateWorld();
+                    if (GenerationUI.Instance.generationCount > 1)
+                    {
+                        NeuralNetController.Instance.compareNetsAndMutateBest();
+                    }
+
+                    CreateWorld();
+
+                }
+                else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
 
             }
-            else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
 
         }
 
@@ -205,9 +213,9 @@ namespace Antymology.Terrain
 
         #region Helpers
 
-        private void Timer()
+        private void endSimulation()
         {
-            GenerateAnts();
+            simulationNotDone = false;
         }
 
         private void CreateWorld()

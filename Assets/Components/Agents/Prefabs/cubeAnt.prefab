@@ -755,6 +755,7 @@ GameObject:
   - component: {fileID: 9195433069832388264}
   - component: {fileID: -7056206835651120482}
   - component: {fileID: 4487201042770225525}
+  - component: {fileID: -2220512875771992780}
   m_Layer: 0
   m_Name: cubeAnt
   m_TagString: ant
@@ -831,7 +832,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9195433069832388271}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -875,3 +876,19 @@ MonoBehaviour:
   currentBlock: 
   antTimeToWaitInbetween: 1
   antWaitTimer: 0
+--- !u!54 &-2220512875771992780
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9195433069832388271}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 1

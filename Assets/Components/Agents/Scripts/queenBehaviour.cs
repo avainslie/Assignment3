@@ -33,36 +33,7 @@ namespace Antymology.AgentScripts
             {
                 produceNestBlock();
 
-                int[] queenCurrentPosition = antAndQueenController.getCurrentWorldXYZAnt(gameObject);
-                int queenX = queenCurrentPosition[0];
-                int queenY = queenCurrentPosition[1];
-                int queenZ = queenCurrentPosition[2];
-
-                int yInfrontOfQueen = WorldManager.Instance.getHeightAt(queenX, queenZ + 1);
-                int yToRightOfQueen = WorldManager.Instance.getHeightAt(queenX + 1, queenZ);
-                int yToLeftOfQueen = WorldManager.Instance.getHeightAt(queenX - 1, queenZ);
-
-
-                // If nothing greater or smaller in height diff of 2 infront of her
-                // Then move forward
-                if (Mathf.Abs(queenY - yInfrontOfQueen) <= 2)
-                {
-                    transform.position = new Vector3(queenX, yInfrontOfQueen, queenZ + 1);
-                }
-
-                else if (Mathf.Abs(queenY - yToLeftOfQueen) <= 2 && (WorldManager.
-                    Instance.GetBlock(queenX - 1, yToLeftOfQueen, queenZ) as NestBlock) == null)
-                {
-                    transform.position = new Vector3(queenX - 1, yToLeftOfQueen, queenZ);
-                    transform.Rotate(new Vector3(0, -90, 0));
-                }
-
-                else if (Mathf.Abs(queenY - yToRightOfQueen) <= 2)
-                {
-                    transform.position = new Vector3(queenX + 1, yToRightOfQueen, queenZ);
-                    transform.Rotate(new Vector3(0, 90, 0));
-                }
-
+                    Invoke("moveQueen", 1f);
 
             }
                 queenWaitTimer = 0f;
@@ -70,6 +41,40 @@ namespace Antymology.AgentScripts
             else { queenWaitTimer += 1 * Time.deltaTime; }
 
 
+
+        }
+
+        private void moveQueen()
+        {
+            int[] queenCurrentPosition = antAndQueenController.getCurrentWorldXYZAnt(gameObject);
+            int queenX = queenCurrentPosition[0];
+            int queenY = queenCurrentPosition[1];
+            int queenZ = queenCurrentPosition[2];
+
+            int yInfrontOfQueen = WorldManager.Instance.getHeightAt(queenX, queenZ + 1);
+            int yToRightOfQueen = WorldManager.Instance.getHeightAt(queenX + 1, queenZ);
+            int yToLeftOfQueen = WorldManager.Instance.getHeightAt(queenX - 1, queenZ);
+
+
+            // If nothing greater or smaller in height diff of 2 infront of her
+            // Then move forward
+            if (Mathf.Abs(queenY - yInfrontOfQueen) <= 2)
+            {
+                transform.position = new Vector3(queenX, yInfrontOfQueen, queenZ + 1);
+            }
+
+            else if (Mathf.Abs(queenY - yToLeftOfQueen) <= 2 && (WorldManager.
+                Instance.GetBlock(queenX - 1, yToLeftOfQueen, queenZ) as NestBlock) == null)
+            {
+                transform.position = new Vector3(queenX - 1, yToLeftOfQueen, queenZ);
+                transform.Rotate(new Vector3(0, -90, 0));
+            }
+
+            else if (Mathf.Abs(queenY - yToRightOfQueen) <= 2)
+            {
+                transform.position = new Vector3(queenX + 1, yToRightOfQueen, queenZ);
+                transform.Rotate(new Vector3(0, 90, 0));
+            }
 
         }
 
