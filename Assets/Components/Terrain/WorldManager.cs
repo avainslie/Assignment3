@@ -225,6 +225,8 @@ namespace Antymology.Terrain
 
         private void ClearWorld()
         {
+            HighScoreUI.Instance.adjustHighScore(NestUI.Instance.nestBlockCount);
+
             NestUI.Instance.resetNestUI();
             GameObject[] GameObjects = FindObjectsOfType<GameObject>();
 
