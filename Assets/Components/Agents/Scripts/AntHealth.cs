@@ -4,6 +4,9 @@ using System.Collections;
 
 namespace Antymology.AgentScripts
 {
+    /// <summary>
+    /// Manages all methods related to the ants health
+    /// </summary>
     public class AntHealth : MonoBehaviour
     {
 
@@ -45,11 +48,12 @@ namespace Antymology.AgentScripts
             }
         }
 
-
+        // Ant health reduces at a fixed rate
         private void lowerAntHealthFixedAmount()
         {
             if (!gameObject.tag.Equals("queen"))
             {
+                // Double the amount that is reduced if on acidic block
                 if (standingOnAcidicBlock)
                 {
                     health -= 4f;
@@ -67,14 +71,14 @@ namespace Antymology.AgentScripts
         {
             if (health <= 0f && !gameObject.tag.Equals("queen")) // Queen never dies
             {
-                //Destroy(gameObject);
                 gameObject.SetActive(false);
                 return false;
             }
             return true;
         }
 
-        #region PUBLIC METHODS 
+        #region PUBLIC METHODS
+
         public void eatMulchGainHealth()
         {
             if (canEat)
@@ -83,6 +87,7 @@ namespace Antymology.AgentScripts
             }
         }
 
+        // Decides whether to share
         public void shareHealthToAntWithLess(string otherTag, AntHealth otherAntHealth)
         {
             if (otherAntHealth.health < health)
@@ -91,6 +96,7 @@ namespace Antymology.AgentScripts
             }
         }
 
+        // Calculates how much to share
         public float shareHealth(float otherAntHealth, string otherTag)
         {
             health -= 15;

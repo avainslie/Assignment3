@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Keeps track of the generation count
+/// </summary>
 public class GenerationUI : Singleton<GenerationUI>
 {
 

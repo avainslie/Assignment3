@@ -32,18 +32,6 @@ namespace Antymology.AgentScripts
         public float currentHealth;
         public float queensHealth;
 
-        // OUTPUTS
-        private float moveF;
-        private float moveB;
-        private float moveR;
-        private float moveL;
-        private float nothing;
-        private float dig;
-        private float eat;
-        // shareHealth
-
-        [SerializeField] string currentBlock;
-
         public float antTimeToWaitInbetween = 10f;
         public float antWaitTimer = 0f;
 
@@ -54,6 +42,7 @@ namespace Antymology.AgentScripts
 
             antHealth = GetComponent<AntHealth>();
 
+            // Get queen's gameobject and script
             queen = GameObject.FindGameObjectWithTag("queen");
             queenBehaviour = queen.GetComponent<queenBehaviour>();
         }
@@ -64,15 +53,12 @@ namespace Antymology.AgentScripts
 
             if (antWaitTimer >= antTimeToWaitInbetween)
             {
+                // Get inputs
                 int[] pos = AntPosition.getAntCurrentPosition(transform.position);
 
                 xCoord = pos[0];
                 yCoord = pos[1];
                 zCoord = pos[2];
-
-                AbstractBlock ab = WorldManager.Instance.GetBlock( (int) xCoord, (int) yCoord, (int) zCoord);
-
-                currentBlock = ab.ToString();
 
                 distToQueen = calculateDistToQueen();
 
@@ -82,24 +68,24 @@ namespace Antymology.AgentScripts
 
                 inputs = new float[6] { distToQueen, xCoord, yCoord, zCoord, currentHealth, queensHealth };
 
-                // Get output from the current neural net
+                // Get output from the current neural net based on inputs
                 string decision = NeuralNetController.Instance.runNeuralNet(inputs);
 
+                // Do something based on highest probability output
                 switch (decision)
                 {
                     case "moveF":
                         moveAnt("F");
                         Debug.Log("MOVEF");
-                        
                         break;
 
                     case "moveB":
                         moveAnt("B");
                         Debug.Log("MOVEB");
-                        transform.Rotate(new Vector3(0, 180, 0));
                         break;
 
                     case "moveR":
+                        // Rotate then move forward
                         transform.Rotate(new Vector3(0, 90, 0));
                         moveAnt("F");
                         Debug.Log("MOVER");
@@ -107,6 +93,7 @@ namespace Antymology.AgentScripts
                         break;
 
                     case "moveL":
+                        // Rotate then move forward
                         transform.Rotate(new Vector3(0, -90, 0));
                         moveAnt("F");
                         Debug.Log("MOVEL");
@@ -127,6 +114,7 @@ namespace Antymology.AgentScripts
                         consumeMulch((int) xCoord, (int) yCoord - 1, (int) zCoord);
                         break;
                 }
+
                 checkIfOnAcidicBlock();
                 antWaitTimer = 0f;
             }
@@ -178,26 +166,13 @@ namespace Antymology.AgentScripts
 
                     // Apply movement
                     transform.position = new Vector3(x, y, z);
+
+                    // Turn ant around if moved backwards
+                    if (move.Equals("B"))
+                        transform.Rotate(new Vector3(0, 180, 0));
                 }
                 
-            }
-
-            else
-            {
-                switch (move)
-                {
-                    case "R":
-                        if (DirectionFinder.validXNeighbourHeight(x + 1, y, z))
-                            transform.position = new Vector3(x + 1, WorldManager.Instance.getHeightAt(x + 1, z) , z);
-                        break;
-                    case "L":
-                        if (DirectionFinder.validXNeighbourHeight(x - 1, y, z))
-                            transform.position = new Vector3(x - 1, WorldManager.Instance.getHeightAt(x + 1, z), z);
-                        break;
-                }
-            }
-
-            
+            }  
         }
 
         #endregion
@@ -209,6 +184,7 @@ namespace Antymology.AgentScripts
         // Remove block from world by digging it
         private void digBlock(int xBlockToDig, int yBlockToDig, int zBlockToDig)
         {
+            // Only digs non-container blocks
             if ((WorldManager.Instance.GetBlock(xBlockToDig, yBlockToDig, zBlockToDig) as ContainerBlock) == null)
             {
                 WorldManager.Instance.SetBlock(xBlockToDig, yBlockToDig, zBlockToDig, new AirBlock());
@@ -219,6 +195,7 @@ namespace Antymology.AgentScripts
 
         private void consumeMulch(int xBlockToEat, int yBlockToEat, int zBlockToEat)
         {
+            // Only eats mulch blocks
             if ((WorldManager.Instance.GetBlock(xBlockToEat, yBlockToEat, zBlockToEat) as MulchBlock) != null)
             {
                 antHealth.standingOnAcidicBlock = false;
@@ -245,15 +222,17 @@ namespace Antymology.AgentScripts
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("SOMETHING COLLIDED");
             if (other.CompareTag("ant") || other.CompareTag("queen"))
             {
                 Debug.Log("ANT OR QUEEN COLLISION");
+
+                // Ants cannot eat when in the same space
                 antHealth.canEat = false;
 
                 otherAntHealth = other.GetComponent<AntHealth>();
 
-                // Ants may give some of their health to other ants occupying the same space (must be a zero-sum exchange)
+                // Ants may give some of their health to other ants occupying
+                // the same space (must be a zero-sum exchange)
                 if (otherAntHealth != null)
                     antHealth.shareHealthToAntWithLess(other.tag, otherAntHealth);
 

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Keeps track of the highscore
+/// </summary>
 public class HighScoreUI : Singleton<HighScoreUI>
 {
     public int highScore;

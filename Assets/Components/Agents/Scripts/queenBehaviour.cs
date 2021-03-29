@@ -39,9 +39,6 @@ namespace Antymology.AgentScripts
                 queenWaitTimer = 0f;
             }
             else { queenWaitTimer += 1 * Time.deltaTime; }
-
-
-
         }
 
         private void moveQueen()

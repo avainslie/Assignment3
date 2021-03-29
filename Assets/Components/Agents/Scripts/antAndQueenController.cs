@@ -10,6 +10,7 @@ namespace Antymology.AgentScripts
     /// </summary>
     public static class antAndQueenController
     {
+        // Moves ant up one world unit
         public static void moveAntUpOne(GameObject go)
         {
             int[] pos = getCurrentWorldXYZAnt(go);
@@ -20,6 +21,7 @@ namespace Antymology.AgentScripts
             go.transform.position = new Vector3(x, y + 1, z);
         }
 
+        // Moves ant down one world unit
         public static void moveAntDownOne(GameObject go)
         {
             int[] pos = getCurrentWorldXYZAnt(go);
@@ -30,6 +32,7 @@ namespace Antymology.AgentScripts
             go.transform.position = new Vector3(x, y - 1, z);
         }
 
+        // Gives the current coordinates of an ant
         public static int[] getCurrentWorldXYZAnt(GameObject go)
         {
             int[] currentXYZWorldAntCoord = AntPosition.getAntCurrentPosition(go.transform.position);

@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+/// <summary>
+/// Keeps track of the current generations nest block count
+/// </summary>
 public class NestUI : Singleton<NestUI>
 {
 

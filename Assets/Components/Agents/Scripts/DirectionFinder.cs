@@ -18,6 +18,7 @@ namespace Antymology.AgentScripts
 
             int[][] neighbourXZCoords = new int[3][];
 
+            // Forward neighbours
             if (dir.Equals("F"))
             {
                 neighbourXZCoords = new int[][]
@@ -27,6 +28,7 @@ namespace Antymology.AgentScripts
                 new int[] { xCoord + 1, zCoord+1 },
                 };
             }
+            // Backward neighbours
             else 
             {
                 neighbourXZCoords = new int[][]

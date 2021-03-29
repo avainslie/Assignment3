@@ -159,29 +159,6 @@ namespace Antymology.AgentScripts
                 }
 
             }
-
-            ////Create the stream to add object into it.  
-            //System.IO.Stream ms = File.OpenWrite(fpath);
-            ////Format the object as Binary  
-
-            //BinaryFormatter formatter = new BinaryFormatter();
-            ////It serialize the employee object  
-            //formatter.Serialize(ms, net);
-            //ms.Flush();
-            //ms.Close();
-            //ms.Dispose();
-
-            //FileStream file;
-
-            //if (File.Exists(fpath))
-            //    file = File.OpenWrite(fpath);
-
-            //else file = File.Create(fpath);
-
-            //BinaryFormatter bf = new BinaryFormatter();
-            //bf.Serialize(file, toWrite);
-            //file.Close();
-
         }
 
         private float[][] initNeurons()
@@ -229,15 +206,6 @@ namespace Antymology.AgentScripts
                         weightsList.Add(layerWeightsList.ToArray());
                     }
                     weights = weightsList.ToArray(); // Create jagged array from our list
-
-                    //for (int i = 0; i < weights.Length; i++)
-                    //{
-                    //    for (int j = 0; j < weights[i].Length; j++)
-                    //    {
-                    //        for (int k = 0; k < weights[i][j].Length; k++)
-                    //            weights[i][j][k] = reader.ReadByte();
-                    //    }
-                    //}
                 }
 
 
@@ -249,47 +217,6 @@ namespace Antymology.AgentScripts
 
             return null;
 
-
-
-
-
-
-            ////Format the object as Binary  
-            //BinaryFormatter formatter = new BinaryFormatter();
-
-            ////Reading the file from the server  
-            //FileStream fs = File.Open(fpath, FileMode.Open);
-
-            //object obj = formatter.Deserialize(fs);
-            //NeuralNet nn = (NeuralNet)obj;
-            //fs.Flush();
-            //fs.Close();
-            //fs.Dispose();
-
-            
-            
-            //Debug.Log("NET FROM FILE INITIALIZED");
-
-            //return nn;
-            
-
-
-            //FileStream file;
-
-            //if (File.Exists(fpath))
-            //{
-            //    file = File.OpenWrite(fpath);
-            //    BinaryFormatter bf = new BinaryFormatter();
-            //    NeuralNet netFromFile = (NeuralNet)bf.Deserialize(file);
-            //    file.Close();
-            //    return netFromFile;
-
-            //}
-            //else
-            //{
-            //    Debug.LogError("File not found");
-            //    return null;
-            //}
         }
 
 

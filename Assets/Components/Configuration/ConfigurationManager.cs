@@ -55,7 +55,13 @@ public class ConfigurationManager : Singleton<ConfigurationManager>
     /// </summary>
     public int numAntsToSpawn = 10;
 
-
+    /// <summary>
+    /// Amount of time each generation gets
+    /// </summary>
     public float timeToWaitInbetween = 60f;
+
+    /// <summary>
+    /// Keeps track of timer 
+    /// </summary>
     public float waitTimer = 0f;
 }
