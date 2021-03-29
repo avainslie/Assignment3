@@ -75,7 +75,10 @@ namespace Antymology.Terrain
         /// </summary>
         private GameObject queen;
 
-        private bool simulationNotDone = true;
+        /// <summary>
+        /// Start the simulation with a neural net from a file
+        /// </summary>
+        private bool runFromFile = false;
 
 
         #endregion
@@ -109,7 +112,10 @@ namespace Antymology.Terrain
 
             antList = new List<GameObject>();
 
-            worldManagerNet = NeuralNetController.Instance.InitializeFirstNeuralNet();
+            if (!runFromFile)
+                worldManagerNet = NeuralNetController.Instance.InitializeFirstNeuralNet();
+            else
+                worldManagerNet = NeuralNetController.Instance.InitializeNeuralNetFromFile();
         }
 
         private void Start()
@@ -119,30 +125,23 @@ namespace Antymology.Terrain
 
         private void Update()
         {
-            Invoke("endSimulation" , 1200f);
-
-            while (simulationNotDone)
+            if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
             {
-                if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
+                worldManagerNet.setFitness(NestUI.Instance.nestBlockCount);
+                NeuralNetController.Instance.nets.Add(worldManagerNet);
+                ClearWorld();
+                GenerationUI.Instance.addGenerationToCount();
+                ConfigurationManager.Instance.waitTimer = 0f;
+
+                if (GenerationUI.Instance.generationCount > 1)
                 {
-                    worldManagerNet.setFitness(NestUI.Instance.nestBlockCount);
-                    NeuralNetController.Instance.nets.Add(worldManagerNet);
-                    ClearWorld();
-                    GenerationUI.Instance.addGenerationToCount();
-                    ConfigurationManager.Instance.waitTimer = 0f;
-
-                    if (GenerationUI.Instance.generationCount > 1)
-                    {
-                        NeuralNetController.Instance.compareNetsAndMutateBest();
-                    }
-
-                    CreateWorld();
-
+                    NeuralNetController.Instance.compareNetsAndMutateBest();
                 }
-                else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
+
+                CreateWorld();
 
             }
-
+            else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
         }
 
         private int[] GenerateRandomWorldCoordinates()
@@ -213,11 +212,6 @@ namespace Antymology.Terrain
 
         #region Helpers
 
-        private void endSimulation()
-        {
-            simulationNotDone = false;
-        }
-
         private void CreateWorld()
         {
             GenerateData();
@@ -226,8 +220,7 @@ namespace Antymology.Terrain
             Camera.main.transform.position = new Vector3(0 / 2, Blocks.GetLength(1), 0);
             Camera.main.transform.LookAt(new Vector3(Blocks.GetLength(0), 0, Blocks.GetLength(2)));
 
-            GenerateAnts();
-            //Invoke("Timer", 3f);     
+            GenerateAnts();    
         }
 
         private void ClearWorld()

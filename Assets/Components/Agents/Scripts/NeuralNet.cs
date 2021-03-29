@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 
+
 // Reference: https://youtu.be/Yq0SfuiOVYE
 // Unsupervised neural network
 namespace Antymology.AgentScripts
 {
+    [System.Serializable]
     public class NeuralNet : IComparable<NeuralNet>
     {
 
-        private int[] layers;
-        private float[][] neurons;
-        private float[][][] weights;
+        public int[] layers;
+        public float[][] neurons;
+        public float[][][] weights;
         private float fitness;
 
         #region INITIALIZATION
@@ -24,6 +26,18 @@ namespace Antymology.AgentScripts
 
             initializeNeurons();
             initializeWeights();
+        }
+
+
+        public NeuralNet(int[] layers, float[][][] weights)
+        {
+            this.layers = new int[layers.Length];
+            for (int i = 0; i < layers.Length; i++)
+                this.layers[i] = layers[i];
+
+            initializeNeurons();
+
+            this.weights = weights;
         }
 
         // Deep copy - copy everything that can be referenced so original is not affected
