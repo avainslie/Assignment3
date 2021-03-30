@@ -35,7 +35,7 @@ namespace Antymology.AgentScripts
             {
                 // Only move queen and let her produce a nest block if she has
                 // over a third of her health
-                if (queenAntHealth.health > (1000 / 3))
+                if ((int) queenAntHealth.health > (1000 / 3))
                 {
                     produceNestBlock();
 
@@ -89,7 +89,7 @@ namespace Antymology.AgentScripts
             int y = pos[1];
             int z = pos[2];
 
-            if (queenAntHealth.health >= (1000 / 3))
+            if (queenAntHealth.health > (1000 / 3))
             {
                 WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
                 // Moves the queen up to stand on the block she just set
