@@ -2,7 +2,9 @@
 
 ## Introduction
 
-For this assignment we were given a Unity project with a world already created. That world consists of a container holding a variety of types of blocks. The block types are mulch, grass, stone, air, container, and acidic.
+In nature ants exhibit collective behaviour to accomplish large and complex tasks such as building nests and finding food. This collective behaviour is emergent. 
+
+For this assignment we were given a Unity project with a world already created. That world consists of a container holding a variety of types of blocks. The block types are mulch, grass, stone, air, container, acidic, and nest.
 
 The purpose of the assignment was to create ants and a queen ant that live in this world and try to maximize nest block production. 
 
@@ -21,8 +23,14 @@ The constraints of this system are as follows:
 
 ## Methods
 
+Tried three different ways of making a neural network to maximize nest block production. 
 
+- The first way was by creating one neural network that controlled the entire simulation. Ants had no "awareness" of a neural networkd. This idea is similar to the third and final idea.
+- The second was by allowing each ant to have its own independent neural network. 
+- The third was to have again one neural network, but each ant runs that one network. 
 
 ## Results
+
+The final version of the project has a simple UI with the generation count, the current nest block count, and the high score of most nest blocks acheived. 
 
 ## Future directions
