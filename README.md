@@ -77,3 +77,11 @@ Another thing to note is that by randomly re-creating the world between generati
 Implementing the use of pheromones in addition to the neural network would be an interesting next step for this project.
 
 Also figuring out the best mutation rate would be a good next step. It was difficult to find a good mutation rate that would create some diversity if the ants weren't making any good decisions, but also not mess up a good neural network. 
+
+
+## Quick Start to Get Project Running
+You must have Unity 2019.2.5 installed to run this project. Please visit https://unity.com/ for more information.
+
+Clone this repository to your local machine
+Open the project in the Unity editor and select the Play button.
+To run from a file containing a neural network, change the runFromFile boolean to true in the WorldManager.
