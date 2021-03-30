@@ -44,9 +44,11 @@ The final version of the project has a simple UI with the generation count, the 
 <img width="1036" alt="Screen Shot 2021-03-29 at 8 33 22 PM" src="https://user-images.githubusercontent.com/50717419/112924819-0b2b9380-90ce-11eb-994e-7962673f9474.png">
 
 Ants generate each generation at random coordinates in the world.
+
 <img width="467" alt="Screen Shot 2021-03-29 at 9 23 38 PM" src="https://user-images.githubusercontent.com/50717419/112929123-133b0180-90d5-11eb-9910-e5be859b0b2f.png">
 
 The queen places nest blocks when she has enough health.
+
 ![queenPlaceBlock](https://user-images.githubusercontent.com/50717419/112929851-7bd6ae00-90d6-11eb-85d4-bafd5462d329.gif)
 
 When the generation is over, the ants are reset, and the world is also reset with random locations for the blocks inside of it. Queen always starts in the same position.
@@ -73,3 +75,5 @@ Another thing to note is that by randomly re-creating the world between generati
 ## Future directions
 
 Implementing the use of pheromones in addition to the neural network would be an interesting next step for this project.
+
+Also figuring out the best mutation rate would be a good next step. It was difficult to find a good mutation rate that would create some diversity if the ants weren't making any good decisions, but also not mess up a good neural network. 
