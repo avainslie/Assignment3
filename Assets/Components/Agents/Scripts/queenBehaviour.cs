@@ -8,6 +8,9 @@ using TMPro;
 
 namespace Antymology.AgentScripts
 {
+    /// <summary>
+    /// Controls the queen
+    /// </summary>
     public class queenBehaviour : MonoBehaviour
     {
         public float queenTimeToWaitInbetween = 2f;
@@ -27,15 +30,18 @@ namespace Antymology.AgentScripts
 
         private void checkQueenHealthAndMove()
         {
+            // Wait time slows this process a bit
             if (queenWaitTimer >= queenTimeToWaitInbetween)
             {
+                // Only move queen and let her produce a nest block if she has
+                // over a third of her health
                 if (queenAntHealth.health > (1000 / 3))
-            {
-                produceNestBlock();
+                {
+                    produceNestBlock();
 
                     Invoke("moveQueen", 1f);
 
-            }
+                }
                 queenWaitTimer = 0f;
             }
             else { queenWaitTimer += 1 * Time.deltaTime; }
@@ -59,14 +65,14 @@ namespace Antymology.AgentScripts
             {
                 transform.position = new Vector3(queenX, yInfrontOfQueen, queenZ + 1);
             }
-
+            // Else go left
             else if (Mathf.Abs(queenY - yToLeftOfQueen) <= 2 && (WorldManager.
                 Instance.GetBlock(queenX - 1, yToLeftOfQueen, queenZ) as NestBlock) == null)
             {
                 transform.position = new Vector3(queenX - 1, yToLeftOfQueen, queenZ);
                 transform.Rotate(new Vector3(0, -90, 0));
             }
-
+            // Else go right
             else if (Mathf.Abs(queenY - yToRightOfQueen) <= 2)
             {
                 transform.position = new Vector3(queenX + 1, yToRightOfQueen, queenZ);
@@ -86,10 +92,12 @@ namespace Antymology.AgentScripts
             if (queenAntHealth.health >= (1000 / 3))
             {
                 WorldManager.Instance.SetBlock(x, y, z, new NestBlock());
+                // Moves the queen up to stand on the block she just set
                 antAndQueenController.moveAntUpOne(gameObject);
 
                 NestUI.Instance.addNestBlockToCount();
 
+                // Cost her one third of her health
                 queenAntHealth.costQueenHealth();
             }
             

@@ -13,14 +13,13 @@ namespace Antymology.AgentScripts
     {
 
         /// <summary>
-        /// 6 inputs, 1 hidden layer w/6 neurons, and 7 outputs. 
+        /// Contains methods to handle the neural nets
+        /// All nets have 6 inputs, 1 hidden layer w/6 neurons, and 7 outputs. 
         /// https://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden-layers-and-nodes-in-a-feedforward-neural-netw
         /// </summary>
         private int[] layers = new int[] { 6, 6, 7 };
 
         private float[][] neurons;
-
-        public bool isTraining = false;
 
         // Get inputs from ants
         // Run nn
@@ -35,8 +34,6 @@ namespace Antymology.AgentScripts
 
         private float[] outputs = new float[7];
 
-        private float[] inputs;
-
         string fpath = @"D:\TestUnityAssingment3IAMHERE.txt";
 
         // INPUTS
@@ -47,8 +44,6 @@ namespace Antymology.AgentScripts
         public float currentHealth;
         public float queensHealth;
 
-        private bool initialized = false;
-
         // Used by ants
         public NeuralNet net;
 
@@ -58,7 +53,9 @@ namespace Antymology.AgentScripts
 
         private NeuralNetController() { }
 
-        // Use this for initialization
+        #region INITIALIZATION
+
+        // Use this for initialization w/out a file
         public NeuralNet InitializeFirstNeuralNet()
         {
             net = new NeuralNet(layers);
@@ -68,6 +65,7 @@ namespace Antymology.AgentScripts
             return net;
         }
 
+        // Start with a file 
         public NeuralNet InitializeNeuralNetFromFile()
         {
             float[][][] weights = ReadFile();
@@ -78,15 +76,19 @@ namespace Antymology.AgentScripts
             return net;
         }
 
+        #endregion
+
+        #region METHODS
+
         // Update is called once per frame
         public string runNeuralNet(float[] inputs)
         {
             outputs = net.feedForward(inputs);
-            // TODO: SOME OUTPUTS ARE NEGATIVE, IS THIS OK???
 
             // NN will give back an output with a larger weight.
             float highestProbability = outputs[0];
 
+            // Iterate through them to find the highest output
             for (int i = 0; i < outputs.Length; i++)
             {
                 if (outputs[i] > highestProbability)
@@ -95,10 +97,12 @@ namespace Antymology.AgentScripts
                     decision = possibleDecisions[i];
                 }
             }
+            // Return the move associated with that output
             return decision;
         }
 
-        // Always pass in current net as n1 and most recent previous net as n2
+        // Always gets current net passed in as n1 and most recent previous net as n2
+        // Remove the net we don't return to keep list from getting too big
         private NeuralNet pickTheBestNet(NeuralNet n1, NeuralNet n2)
         {
             if (n1.CompareTo(n2) == 1)
@@ -125,8 +129,6 @@ namespace Antymology.AgentScripts
         // Compare the current and most recent previous nets
         public void compareNetsAndMutateBest()
         {
-            WriteToFile(net);
-
             // Second last element
             // https://stackoverflow.com/questions/22857137/how-to-find-second-last-element-from-a-list/22857667
             NeuralNet mostRecentPreviousNet = null;
@@ -134,14 +136,20 @@ namespace Antymology.AgentScripts
                 mostRecentPreviousNet = nets[nets.Count - 2];
 
             net = pickTheBestNet(net, mostRecentPreviousNet);
+            // Write current net before mutating it
+            WriteToFile(net);
 
             net.mutateWeightsInMatrix();
 
             Debug.Log("compareNetsAndMutateBest");
         }
+        #endregion
+
+        #region SERIALIZATION
 
         // https://www.tutlane.com/tutorial/csharp/csharp-binarywriter
         // https://answers.unity.com/questions/1300019/how-do-you-save-write-and-load-from-a-file.html
+        // Save neural net to a file
         public void WriteToFile(NeuralNet toWrite)
         {
 
@@ -161,6 +169,7 @@ namespace Antymology.AgentScripts
             }
         }
 
+        // Custom neuron init method for the ReadFile method
         private float[][] initNeurons()
         {
             List<float[]> neuronsList = new List<float[]>();
@@ -173,18 +182,17 @@ namespace Antymology.AgentScripts
             return neurons;
         }
 
+        // Reads a neural net from a file
         public float[][][] ReadFile()
         {
             float[][] neurons = initNeurons();
             float[][][] weights = new float[layers.Length][][];
+            List<float[][]> weightsList = new List<float[][]>();
 
             if (File.Exists(fpath))
             { 
                 using (BinaryReader reader = new BinaryReader(File.Open(fpath, FileMode.Open)))
                 {
-
-                    List<float[][]> weightsList = new List<float[][]>();
-
                     // Each hidden layer will need a weight matrix
                     for (int i = 1; i < layers.Length; i++)
                     {
@@ -207,8 +215,6 @@ namespace Antymology.AgentScripts
                     }
                     weights = weightsList.ToArray(); // Create jagged array from our list
                 }
-
-
                 return weights;
             }
             else
@@ -219,7 +225,7 @@ namespace Antymology.AgentScripts
 
         }
 
-
+        #endregion
 
     }
 }

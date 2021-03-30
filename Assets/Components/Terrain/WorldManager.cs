@@ -7,11 +7,12 @@ using UnityEngine.SceneManagement;
 using Antymology.AgentScripts;
 using Antymology.UI;
 
-// Neural net reference: https://youtu.be/Yq0SfuiOVYE
-// Code modified from his project which is available for download from video descp
-
 namespace Antymology.Terrain
 {
+    /// <summary>
+    /// Neural net reference: https://youtu.be/Yq0SfuiOVYE
+    /// Code modified from his project which is available for download from video descp
+    /// </summary>
     public class WorldManager : Singleton<WorldManager>
     {
 
@@ -98,7 +99,8 @@ namespace Antymology.Terrain
             // Generate new simplex noise generator
             SimplexNoise = new SimplexNoise(ConfigurationManager.Instance.Seed);
 
-            // Initialize a new 3D array of blocks with size of the number of chunks times the size of each chunk
+            // Initialize a new 3D array of blocks with size of the number of
+            // chunks times the size of each chunk
             Blocks = new AbstractBlock[
                 ConfigurationManager.Instance.World_Diameter * ConfigurationManager.Instance.Chunk_Diameter,
                 ConfigurationManager.Instance.World_Height * ConfigurationManager.Instance.Chunk_Diameter,
@@ -125,12 +127,20 @@ namespace Antymology.Terrain
 
         private void Update()
         {
+            // If the generation time is done
             if (ConfigurationManager.Instance.waitTimer >= ConfigurationManager.Instance.timeToWaitInbetween)
             {
+                // Set the fitness of the current net to how many nest blocks were made
                 worldManagerNet.setFitness(NestUI.Instance.nestBlockCount);
+
+                // Save the net to a list
                 NeuralNetController.Instance.nets.Add(worldManagerNet);
+
                 ClearWorld();
+
+                // Increase the generation count
                 GenerationUI.Instance.addGenerationToCount();
+
                 ConfigurationManager.Instance.waitTimer = 0f;
 
                 if (GenerationUI.Instance.generationCount > 1)
@@ -144,6 +154,7 @@ namespace Antymology.Terrain
             else { ConfigurationManager.Instance.waitTimer += 1 * Time.deltaTime; }
         }
 
+        // Returns valid random world coordinates
         private int[] GenerateRandomWorldCoordinates()
         {
             int[] coordinatesForAntInstantiation = new int[3];
@@ -166,6 +177,8 @@ namespace Antymology.Terrain
  
         /// <summary>
         /// Edited from office hours w/Cooper
+        /// Generates ants at random world coords
+        /// Queen always generates at one corner of world
         /// </summary>
         private void GenerateAnts()
         {
@@ -176,7 +189,6 @@ namespace Antymology.Terrain
                 queen = Instantiate(queenPrefab, new Vector3(1f, queenYForInstan, 1f), Quaternion.identity);
 
                 queen.transform.Rotate(new Vector3(0, 90, 0));
-                //queen.transform.position += new Vector3(1f, queenYForInstan - 0.23f, 1f + 0.25f);
            
                 for (int i = 0; i < populationSize; i++)
                 {
@@ -225,9 +237,12 @@ namespace Antymology.Terrain
 
         private void ClearWorld()
         {
+            // Update the high score
             HighScoreUI.Instance.adjustHighScore(NestUI.Instance.nestBlockCount);
 
             NestUI.Instance.resetNestUI();
+
+            // Get all the game objects in the scene
             GameObject[] GameObjects = FindObjectsOfType<GameObject>();
 
             for (int i = 0; i < GameObjects.Length; i++)
@@ -244,7 +259,7 @@ namespace Antymology.Terrain
             }
         }
         
-
+        // Verifies if coords are valid or not
         public bool checkIfCoordinatesAreNotInWorld(int WorldXCoordinate, int WorldYCoordinate, int WorldZCoordinate)
         {
             if (WorldXCoordinate <= 0 ||
@@ -368,11 +383,14 @@ namespace Antymology.Terrain
                 }
 
                 //Generate a sphere around this point overriding non-air blocks
-                for (int HX = xCoord - ConfigurationManager.Instance.Acidic_Region_Radius; HX < xCoord + ConfigurationManager.Instance.Acidic_Region_Radius; HX++)
+                for (int HX = xCoord - ConfigurationManager.Instance.
+                    Acidic_Region_Radius; HX < xCoord + ConfigurationManager.Instance.Acidic_Region_Radius; HX++)
                 {
-                    for (int HZ = zCoord - ConfigurationManager.Instance.Acidic_Region_Radius; HZ < zCoord + ConfigurationManager.Instance.Acidic_Region_Radius; HZ++)
+                    for (int HZ = zCoord - ConfigurationManager.Instance.
+                        Acidic_Region_Radius; HZ < zCoord + ConfigurationManager.Instance.Acidic_Region_Radius; HZ++)
                     {
-                        for (int HY = yCoord - ConfigurationManager.Instance.Acidic_Region_Radius; HY < yCoord + ConfigurationManager.Instance.Acidic_Region_Radius; HY++)
+                        for (int HY = yCoord - ConfigurationManager.Instance.
+                            Acidic_Region_Radius; HY < yCoord + ConfigurationManager.Instance.Acidic_Region_Radius; HY++)
                         {
                             float xSquare = (xCoord - HX) * (xCoord - HX);
                             float ySquare = (yCoord - HY) * (yCoord - HY);
@@ -408,11 +426,14 @@ namespace Antymology.Terrain
 
 
                 //Generate a sphere around this point overriding non-air blocks
-                for (int HX = xCoord - ConfigurationManager.Instance.Conatiner_Sphere_Radius; HX < xCoord + ConfigurationManager.Instance.Conatiner_Sphere_Radius; HX++)
+                for (int HX = xCoord - ConfigurationManager.Instance.Conatiner_Sphere_Radius;
+                    HX < xCoord + ConfigurationManager.Instance.Conatiner_Sphere_Radius; HX++)
                 {
-                    for (int HZ = zCoord - ConfigurationManager.Instance.Conatiner_Sphere_Radius; HZ < zCoord + ConfigurationManager.Instance.Conatiner_Sphere_Radius; HZ++)
+                    for (int HZ = zCoord - ConfigurationManager.Instance.Conatiner_Sphere_Radius;
+                        HZ < zCoord + ConfigurationManager.Instance.Conatiner_Sphere_Radius; HZ++)
                     {
-                        for (int HY = yCoord - ConfigurationManager.Instance.Conatiner_Sphere_Radius; HY < yCoord + ConfigurationManager.Instance.Conatiner_Sphere_Radius; HY++)
+                        for (int HY = yCoord - ConfigurationManager.Instance.Conatiner_Sphere_Radius;
+                            HY < yCoord + ConfigurationManager.Instance.Conatiner_Sphere_Radius; HY++)
                         {
                             float xSquare = (xCoord - HX) * (xCoord - HX);
                             float ySquare = (yCoord - HY) * (yCoord - HY);

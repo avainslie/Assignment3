@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
-// Reference: https://youtu.be/Yq0SfuiOVYE
-// Unsupervised neural network
 namespace Antymology.AgentScripts
 {
+    /// <summary>
+    /// Reference: https://youtu.be/Yq0SfuiOVYE
+    /// Unsupervised neural network
+    /// </summary>
     [System.Serializable]
     public class NeuralNet : IComparable<NeuralNet>
     {
@@ -28,7 +29,7 @@ namespace Antymology.AgentScripts
             initializeWeights();
         }
 
-
+        // Used when we are not using random weights
         public NeuralNet(int[] layers, float[][][] weights)
         {
             this.layers = new int[layers.Length];
@@ -90,6 +91,7 @@ namespace Antymology.AgentScripts
             neurons = neuronsList.ToArray();
         }
 
+        // Sets weights of net to random values
         private void initializeWeights()
         {
             List<float[][]> weightsList = new List<float[][]>();
@@ -123,6 +125,8 @@ namespace Antymology.AgentScripts
 
 
         #region ACTIONS
+
+        // Basically what runs the neural net
         public float[] feedForward(float[] inputs)
         {
             // Put inputs into input layer in neuron matrix
@@ -155,7 +159,7 @@ namespace Antymology.AgentScripts
             return neurons[neurons.Length - 1];
         }
 
-
+        
         public void mutateWeightsInMatrix()
         {
             // Go through all layers
