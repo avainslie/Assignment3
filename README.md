@@ -14,9 +14,9 @@ The constraints of this system are as follows:
 - Ants health reduces at a specific rate.
 - When health hits 0, the ant dies and is removed from the world.
 
-<img width="1018" alt="Screen Shot 2021-03-29 at 8 51 02 PM" src="https://user-images.githubusercontent.com/50717419/112926313-8130fa00-90d0-11eb-9ffa-b1fdf69c7e26.png">
+<img width="700" alt="Screen Shot 2021-03-29 at 8 51 02 PM" src="https://user-images.githubusercontent.com/50717419/112926313-8130fa00-90d0-11eb-9ffa-b1fdf69c7e26.png">
 
-<img width="1013" alt="Screen Shot 2021-03-29 at 8 51 05 PM" src="https://user-images.githubusercontent.com/50717419/112926317-82622700-90d0-11eb-8765-aced2b6275c4.png">
+<img width="700" alt="Screen Shot 2021-03-29 at 8 51 05 PM" src="https://user-images.githubusercontent.com/50717419/112926317-82622700-90d0-11eb-8765-aced2b6275c4.png">
 
 - When standing on an acidic block, rate at which ant health decreases is doubled.
 - Ants can eat mulch blocks to gain health if they are on top of the block. Mulch blocks are removed if they are eaten.
@@ -37,9 +37,12 @@ Used two different sized neural networks as well, but stuck with the one with on
 
 ## Results
 
-The final version of the project has a simple UI with the generation count, the current nest block count, and the high score of most nest blocks acheived. 
+The final version of the project has a simple UI with the generation count, the current nest block count, and the high score of most nest blocks acheived (updates after each generation finishes). 
 
 <img width="1036" alt="Screen Shot 2021-03-29 at 8 33 22 PM" src="https://user-images.githubusercontent.com/50717419/112924819-0b2b9380-90ce-11eb-994e-7962673f9474.png">
+
+
+Training the network over multiple generations should produce a higher nest block count. 
 
 <img width="1431" alt="Screen Shot 2021-03-28 at 5 38 13 PM" src="https://user-images.githubusercontent.com/50717419/112926930-6317c980-90d1-11eb-93af-8d6b2cc3d15a.png">
 
